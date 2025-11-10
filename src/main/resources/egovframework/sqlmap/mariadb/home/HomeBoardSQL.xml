@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.home.pg.service.impl.PgHomeBoardMapper">
+
+    <!-- 게시판 - 총 개수 -->
+    <select id="getBoardTotalCnt" parameterType="java.util.HashMap" resultType="Double">
+        SELECT COUNT(*)
+        FROM BOARD
+        <where>
+            <if test='boardTypeId != null and boardTypeId != ""'>
+                AND board_type_id = #{boardTypeId, jdbcType=CHAR}
+            </if>
+            <if test='searchQuery != null and searchQuery != ""'>
+                AND title LIKE CONCAT('%', #{searchQuery, jdbcType=VARCHAR}, '%')
+            </if>
+        </where>
+    </select>
+
+    <!-- 게시판 - 리스트 -->
+    <select id="getBoardList" parameterType="java.util.HashMap" resultType="egovMap">
+        SELECT
+        b.board_id,
+        b.member_id,
+        b.board_type_id,
+        b.title,
+        b.content,
+        b.view_count,
+        b.status,
+        b.reg_dt,
+        b.updt_dt,
+        b.del_dt,
+        m.username
+        FROM BOARD b
+        JOIN MEMBER m ON b.member_id = m.member_id
+        <where>
+            <if test='boardTypeId != null and boardTypeId != ""'>
+                AND b.board_type_id = #{boardTypeId, jdbcType=CHAR}
+            </if>
+            <if test='searchQuery != null and searchQuery != ""'>
+                AND b.title LIKE CONCAT('%', #{searchQuery, jdbcType=VARCHAR}, '%')
+            </if>
+        </where>
+        ORDER BY b.reg_dt DESC, b.title ASC
+        LIMIT #{limitStart, jdbcType=INTEGER}, #{recordCnt, jdbcType=INTEGER}
+    </select>
+
+    <!-- 게시판 - 단일 조회 -->
+    <select id="getBoard" parameterType="java.util.HashMap" resultType="egovMap">
+        SELECT
+        board_id,
+        member_id,
+        board_type_id,
+        title,
+        content,
+        view_count,
+        status,
+        reg_dt,
+        updt_dt,
+        del_dt
+        FROM BOARD
+        WHERE board_id = #{boardId, jdbcType=INTEGER}
+    </select>
+
+    <!-- 게시판 - Merge -->
+    <insert id="setBoardMerge" parameterType="java.util.HashMap">
+        INSERT INTO BOARD
+        (
+         member_id,
+         board_type_id,
+         title,
+         content,
+         reg_dt
+        )
+        VALUES
+            (
+             #{memberId, jdbcType=INTEGER},
+             #{boardTypeId, jdbcType=INTEGER},
+             #{title, jdbcType=VARCHAR},
+             #{content, jdbcType=VARCHAR},
+             NOW()
+            )
+        ON DUPLICATE KEY UPDATE
+            board_type_id = #{boardTypeId},
+            title = #{title},
+            content = #{content},
+            updt_dt = NOW()
+        <if test="status != null and status != ''">
+            status = #{status, jdbcType=VARCHAR}
+        </if>
+
+    </insert>
+
+    <!-- 게시판 - 삭제 -->
+    <delete id="setBoardDelete" parameterType="java.util.HashMap">
+        DELETE
+        FROM BOARD
+        WHERE board_id = #{boardId, jdbcType=INTEGER}
+    </delete>
+
+    <!-- 게시판 - 조회수 + 1 -->
+    <update id="increaseViewCount" parameterType="java.util.HashMap">
+        UPDATE BOARD
+        SET view_count = view_count + 1
+        WHERE board_id = #{boardId, jdbcType=INTEGER}
+    </update>
+
+</mapper>

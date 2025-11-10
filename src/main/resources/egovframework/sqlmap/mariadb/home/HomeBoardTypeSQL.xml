@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.home.pg.service.impl.PgHomeBoardTypeMapper">
+
+    <!-- 게시판 타입 - 게시판 타입 종류 리스트 -->
+    <select id="getBoardTypeList" resultType="egovMap">
+        SELECT
+            board_type_id,
+            name,
+            use_at,
+            reg_dt,
+            updt_dt
+        FROM
+            BOARD_TYPE
+    </select>
+
+</mapper>
