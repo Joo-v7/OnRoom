@@ -18,7 +18,7 @@
 
 <!-- Page content-->
 <div class="container-xl">
-  <div class="row">
+  <div class="row py-5">
 
     <!-- sidebar -->
     <div class="col-lg-2">
@@ -34,7 +34,7 @@
           <h3 class="fw-semibold mb-3"><c:out value="${board.title}"/></h3>
           <!-- 메타 라인 -->
           <div class="border-top border-bottom pt-3 pb-3 small text-muted d-flex gap-3">
-            <div><strong class="text-dark me-3">작성자</strong> <span class="text-secondary"><c:out value="${writer}"/></span></div>
+            <div><strong class="text-dark me-3">작성자</strong> <span class="text-secondary"><c:out value="${board.name}"/></span></div>
             <div class="vr"></div>
             <div><strong class="text-dark me-3">작성일</strong> <span><fmt:formatDate value="${board.regDt}" pattern="yyyy-MM-dd HH:mm"/></span></div>
             <div class="vr"></div>
@@ -42,7 +42,7 @@
           </div>
 
           <!-- 본문 -->
-          <div class="border-bottom pb-4 pt-3" style="min-height: 25vh;">
+          <div class="border-bottom pb-4 pt-3" style="min-height: 30vh;">
             <div class="content">
               <c:out value="${board.content}" />
             </div>

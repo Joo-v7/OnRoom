@@ -1,7 +1,9 @@
 package egovframework.home.pg.web;
 
+import egovframework.home.pg.common.security.user.PrincipalDetails;
 import egovframework.home.pg.service.PgHomeBoardService;
 import egovframework.home.pg.service.PgHomeBoardTypeService;
+import egovframework.home.pg.service.PgHomeMemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -11,6 +13,10 @@ import org.egovframe.rte.psl.dataaccess.util.EgovMap;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +33,7 @@ public class PgHomeBoardController {
 
     private final PgHomeBoardService pgHomeBoardService;
     private final PgHomeBoardTypeService pgHomeBoardTypeService;
+    private final PgHomeMemberService pgHomeMemberService;
 
     /**
      * 게시판 - 리스트 화면
@@ -110,16 +117,20 @@ public class PgHomeBoardController {
         return ResponseEntity.status(HttpStatus.OK).body(retMap);
     }
 
+    /**
+     * 게시판 - 단일 게시판 뷰 페이지
+     * @param req
+     * @param res
+     * @param model
+     * @param param
+     * @return
+     * @throws Exception
+     */
     @RequestMapping("/boardView.do")
     public String boardView(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
         pgHomeBoardService.increaseViewCount(param);
         EgovMap board = pgHomeBoardService.getBoard(param);
         model.addAttribute("board", board);
-
-        // TODO: 회원 구현하면 작성자 model에 넣어주기.
-
-        // TODO: 댓글 기능 구현
-        model.addAttribute("writer", "홍길동");
 
         return "home/pg/boardView";
     }
@@ -133,10 +144,12 @@ public class PgHomeBoardController {
      * @return board.jsp
      * @throws Exception
      */
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping("/board.do")
     public String boardForm(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
         List<EgovMap> boardTypeList = pgHomeBoardTypeService.getBoardTypeList();
         model.addAttribute("boardTypeList", boardTypeList);
+
         return "home/pg/board";
     }
 
@@ -144,23 +157,29 @@ public class PgHomeBoardController {
      * 게시판 - 등록
      * @param req
      * @param res
-     * @param model
      * @param param
      * @return 게시판 등록 결과
      * @throws Exception
      */
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping("/setBoardMerge.do")
     @ResponseBody
-    public ResponseEntity<?> setBoardMerge(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
+    public ResponseEntity<?> setBoardMerge(
+            HttpServletRequest req,
+            HttpServletResponse res,
+            @RequestParam HashMap<String, Object> param,
+            Authentication authentication
+    ) throws Exception {
+
         HashMap<String, Object> retMap = new HashMap<>();
 
-        // TODO: 반드시 회원가입/로그인 구현 후 수정.
-        param.put("memberId", 1);
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        param.put("memberId", principalDetails.getId());
 
         if (pgHomeBoardService.setBoardMerge(param)) {
             retMap.put("error", "N");
             retMap.put("successTitle", "Success");
-            retMap.put("successMsg", "성공적으로 저장 되었습니다.");
+            retMap.put("successMsg", "성공적으로 저장되었습니다.");
         } else {
             retMap.put("error", "Y");
             retMap.put("errorTitle", "게시판 저장");
@@ -170,6 +189,7 @@ public class PgHomeBoardController {
         return ResponseEntity.status(HttpStatus.OK).body(retMap);
 
     }
+
 
     // TODO: 게시판 - 수정/삭제(소프트 삭제)
 

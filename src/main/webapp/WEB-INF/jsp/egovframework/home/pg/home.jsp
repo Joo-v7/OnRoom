@@ -12,7 +12,7 @@
 
 <!-- Page content-->
 <div class="container-xl">
-  <div class="row">
+  <div class="row py-5">
 
     <!-- sidebar -->
     <div class="col-lg-2">

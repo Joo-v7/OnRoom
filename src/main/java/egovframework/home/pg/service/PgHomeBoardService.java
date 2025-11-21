@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface PgHomeBoardService {
-    List<EgovMap> getBoardTypeList() throws DataAccessException;
 
     double getBoardTotalCnt(HashMap<String, Object> param) throws DataAccessException;
 

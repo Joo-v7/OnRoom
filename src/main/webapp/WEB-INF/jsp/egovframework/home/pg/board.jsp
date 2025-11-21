@@ -18,7 +18,7 @@
 
 <!-- Page content-->
 <div class="container-xl">
-  <div class="row">
+  <div class="row py-5">
 
     <!-- sidebar -->
     <div class="col-lg-2">
@@ -34,14 +34,14 @@
             <p class="small"><span class="text-danger mb-3">*</span> 는 필수 입력 사항입니다.</p>
             <dl class="row mb-3">
               <dt class="col-sm-2 col-form-label">제목 <span class="text-danger">*</span></dt>
-              <dd class="col-sm-10">
+              <dd class="col-sm-5">
                 <input type="text" class="form-control" id="title" name="title" maxlength="50" required>
               </dd>
             </dl>
 
             <dl class="row mb-3">
               <dt class="col-sm-2 col-form-label">분류 <span class="text-danger">*</span></dt>
-              <dd class="col-sm-10">
+              <dd class="col-sm-2">
                 <select id="boardType" name="boardTypeId" class="form-select" required>
                   <option value="" selected>선택</option>
                   <c:forEach var="boardType" items="${boardTypeList}">

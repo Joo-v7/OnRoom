@@ -35,15 +35,19 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-5 mb-2 mb-lg-0">
                 <li class="nav-item mx-4"><a class="nav-link active" href="<c:url value='/'/>">홈</a></li>
-                <li class="nav-item mx-4"><a class="nav-link active" href="#!">예약</a></li>
+                <li class="nav-item mx-4"><a class="nav-link active" href="<c:url value='/reservationList.do'/>">예약</a></li>
                 <li class="nav-item mx-4"><a class="nav-link active" href="<c:url value='/boardList.do'/>">게시판</a></li>
-                <li class="nav-item mx-4"><a class="nav-link active" aria-current="page" href="#!">Blog</a></li>
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="<c:url value='/'/>">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="#!">Contact</a></li>
-                <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">Blog</a></li>
+                <c:choose>
+                    <c:when test="${isLogin}">
+                        <li class="nav-item"><a class="nav-link active" href="<c:url value='/myPage.do'/>">마이페이지</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="<c:url value='/logout.do'/>">로그아웃</a></li>
+                    </c:when>
+                    <c:otherwise>
+                        <li class="nav-item"><a class="nav-link active" href="<c:url value='/join.do'/>">회원가입</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="<c:url value='/login.do'/>">로그인</a></li></c:otherwise>
+                </c:choose>
             </ul>
         </div>
     </div>
@@ -51,7 +55,7 @@
 <!-- Page header with logo and tagline-->
 <header class="py-1 bg-light border-bottom mb-4">
     <div class="container">
-        <div class="text-center my-5">
+        <div class="text-center my-4">
             <h1 class="fw-bolder">OnRoom</h1>
             <p class="lead mb-0">예약 웹 사이트</p>
         </div>

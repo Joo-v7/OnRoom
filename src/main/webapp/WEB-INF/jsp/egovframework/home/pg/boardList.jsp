@@ -13,7 +13,7 @@
 
 <!-- Page content-->
 <div class="container">
-  <div class="row">
+  <div class="row py-5">
 
     <!-- sidebar -->
     <div class="col-lg-2">
@@ -134,7 +134,7 @@ function dataList() {
             + '<a href="#" class="boardView" data-id="' + $.trim(values.boardId) + '">'
             + $.trim(values.title ?? '') + '</a></td>';
         // 작성자
-        tableData += '<td class="text-center">' + $.trim(values.username ?? '-') + '</td>';
+        tableData += '<td class="text-center">' + $.trim(values.name ?? '-') + '</td>';
         // 작성일
         tableData += '<td class="text-center">' + formatDate(values.regDt) + '</td>';
         // 조회수

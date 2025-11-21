@@ -22,13 +22,6 @@ public class PgHomeBoardServiceImpl extends EgovAbstractServiceImpl implements P
 
     private final PgHomeBoardMapper pgHomeBoardMapper;
 
-    private final PgHomeBoardTypeMapper pgHomeBoardTypeMapper;
-
-    @Override
-    public List<EgovMap> getBoardTypeList() throws DataAccessException {
-        return pgHomeBoardTypeMapper.getBoardTypeList();
-    }
-
     @Override
     public double getBoardTotalCnt(HashMap<String, Object> param) throws DataAccessException {
         return pgHomeBoardMapper.getBoardTotalCnt(param);
