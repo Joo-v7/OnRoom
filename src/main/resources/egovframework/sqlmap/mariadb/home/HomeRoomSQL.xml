@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.home.pg.service.impl.PgHomeRoomMapper">
+
+    <!-- 사용 가능한 회의실 전체 조회 -->
+    <select id="getRoomList" parameterType="hashMap" resultType="egovMap">
+        SELECT
+            room_id
+          , name
+          , capacity
+        FROM ROOM
+        WHERE use_at = 'Y'
+    </select>
+
+    <!-- 회의실 단일 조회 -->
+    <select id="getRoom" parameterType="hashMap" resultType="egovMap">
+        SELECT
+            room_id
+          , name
+          , capacity
+        FROM ROOM
+        WHERE room_id = #{roomId, jdbcType=INTEGER}
+    </select>
+
+</mapper>
