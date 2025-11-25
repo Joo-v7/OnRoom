@@ -34,7 +34,7 @@
             <input type="hidden" id="movePage" name="movePage" value="<c:out value='${param.movePage}' default='1' />">
 
             <select id="searchBoardType" name="searchBoardType" class="form-select w-auto">
-              <option value="" <c:if test="${param.searchBoardType eq ''}">selected</c:if>>게시판 분류 선택</option>
+              <option value="" <c:if test="${param.searchBoardType eq ''}">selected</c:if>>게시글 분류 선택</option>
               <c:forEach var="searchBoardType" items="${boardTypeList}">
                 <option value="${searchBoardType.boardTypeId}" ${param.searchBoardType == searchBoardType.boardTypeId ? 'selected' : ''}>${searchBoardType.name}</option>
               </c:forEach>
@@ -225,36 +225,6 @@ function numberWithCommas(a) {
     return a.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
 
-function ajaxForm(a, b, c) {
-  var d = !0
-          , f = "application/x-www-form-urlencoded; charset=UTF-8";
-  "object" === $.type(b) && b instanceof FormData && (f = d = !1);
-  $.ajax({
-    type: "post",
-    url: a,
-    cache: !1,
-    data: b,
-    processData: d,
-    contentType: f,
-    dataType: "json",
-    success: function(e) {
-      if ("N" == e.error)
-        "undefined" !== $.type(e.redirect) && "" != $.trim(e.redirect) && ("reload" == $.trim(e.redirect) ? document.location.reload(!0) : document.location.href = $.trim(e.redirect));
-      else {
-        var g = 0;
-        "undefined" !== $.type(e.inputArr) && $.each(e.inputArr, function(h, k) {
-          0 == g && $("#" + h).focus();
-          g++
-        });
-        "undefined" !== $.type(e.errorTitle) && "" != $.trim(e.errorTitle) && alert(e.errorMsg)
-      }
-      "function" === $.type(c) && c(e)
-    },
-    error: function(e, g, h) {
-      alert("[" + e.status + "] " + h)
-    }
-  })
-}
 
 // id, curPage, totalPage, 시작 페이지 번호(안념겨도됨)
 function customPagination(a, b, c, d) {
