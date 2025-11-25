@@ -33,7 +33,6 @@ public class PgHomeBoardController {
 
     private final PgHomeBoardService pgHomeBoardService;
     private final PgHomeBoardTypeService pgHomeBoardTypeService;
-    private final PgHomeMemberService pgHomeMemberService;
 
     /**
      * 게시판 - 리스트 화면
@@ -170,24 +169,28 @@ public class PgHomeBoardController {
             @RequestParam HashMap<String, Object> param,
             Authentication authentication
     ) throws Exception {
-
         HashMap<String, Object> retMap = new HashMap<>();
 
-        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        param.put("memberId", principalDetails.getId());
+        try {
+            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+            param.put("memberId", principalDetails.getId());
 
-        if (pgHomeBoardService.setBoardMerge(param)) {
-            retMap.put("error", "N");
-            retMap.put("successTitle", "Success");
-            retMap.put("successMsg", "성공적으로 저장되었습니다.");
-        } else {
-            retMap.put("error", "Y");
-            retMap.put("errorTitle", "게시판 저장");
-            retMap.put("errorMsg", "데이터 처리 중 오류가 발생했습니다.");
-        }
+            if (pgHomeBoardService.setBoardMerge(param)) {
+                retMap.put("error", "N");
+                retMap.put("successTitle", "Success");
+                retMap.put("successMsg", "성공적으로 저장되었습니다.");
+            } else {
+                retMap.put("error", "Y");
+                retMap.put("errorTitle", "예약 저장");
+                retMap.put("errorMsg", "데이터 처리 중 오류가 발생했습니다.");
+            }
+
+        } catch (DataAccessException | NullPointerException e) {
+        log.error("PgHomeBoardController:setBoardMerge.do error={}", e.getMessage());
+        throw e;
+    }
 
         return ResponseEntity.status(HttpStatus.OK).body(retMap);
-
     }
 
 

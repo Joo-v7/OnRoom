@@ -87,7 +87,7 @@
             content = #{content, jdbcType=VARCHAR},
             updt_dt = NOW()
         <if test="status != null and status != ''">
-            status = #{status, jdbcType=VARCHAR}
+            , status = #{status, jdbcType=VARCHAR}
         </if>
 
     </insert>

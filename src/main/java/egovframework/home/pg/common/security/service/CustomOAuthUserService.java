@@ -13,7 +13,9 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -57,6 +59,8 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
             memberMap.put("phone", phone);
             memberMap.put("email", email);
             memberMap.put("birthdate", birthdate);
+            // OAuth ROLE 하드 코딩
+            memberMap.put("roleId", "3"); // 1: ROLE_ADMIN, 2:ROLE_USER, 3: ROLE_OAUTH
 
             try {
                 pgHomeMemberService.setMemberMerge(memberMap);

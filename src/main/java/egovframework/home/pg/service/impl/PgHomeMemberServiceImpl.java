@@ -4,6 +4,7 @@ import egovframework.home.pg.common.utils.AES256Util;
 import egovframework.home.pg.service.PgHomeMemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import org.egovframe.rte.psl.dataaccess.util.EgovMap;
 import org.springframework.dao.DataAccessException;
@@ -94,11 +95,17 @@ public class PgHomeMemberServiceImpl extends EgovAbstractServiceImpl implements 
         param.put("email", encryptedEmail);
 
         if (pgHomeMemberMapper.setMemberMerge(param) > 0) {
-            // ROLE 하드코딩
-            List<Integer> roleIds = new ArrayList<>();
-            roleIds.add(1); // 1: ROLE_USER, 2: ROLE_ADMIN
+            String roleId = StringUtils.stripToEmpty((String)param.get("roleId"));
 
-            param.put("roleIds", roleIds);
+            List<Integer> roleList = new ArrayList<>();
+            if (StringUtils.isEmpty(roleId)) {
+                // 일반 회원 ROLE 하드 코딩
+                roleList.add(2); // 1: ROLE_ADMIN, 2:ROLE_USER, 3: ROLE_OAUTH
+                param.put("roleIds", roleList);
+            } else {
+                roleList.add(Integer.parseInt(roleId));
+                param.put("roleIds", roleList);
+            }
 
             if (pgHomeMemberRoleMapper.setMemberRoleInsert(param) > 0) {
                 result = true;

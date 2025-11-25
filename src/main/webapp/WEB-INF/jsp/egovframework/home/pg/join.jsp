@@ -37,9 +37,12 @@
             <dl class="row mb-3">
               <dt class="col-sm-2 col-form-label">아이디 <span class="text-danger">*</span></dt>
               <dd class="col-sm-7">
-                <input id="username" name="username" type="text" class="form-control" placeholder="6~20자의 영문 소문자, 숫자를 입력하세요" maxlength="20" required>
-                <div class="valid-feedback">사용 가능한 아이디입니다.</div>
-                <div class="invalid-feedback">6~20자의 영문 소문자, 숫자만 사용 가능합니다.</div>
+                <div class="input-group">
+                  <input id="username" name="username" type="text" class="form-control" placeholder="6~20자의 영문 소문자, 숫자를 입력하세요" maxlength="20" required>
+                  <button type="button" id="checkIdBtn" class="btn btn-outline-secondary">중복확인</button>
+                  <div class="valid-feedback">사용가능한 아이디입니다.</div>
+                  <div class="invalid-feedback">6~20자의 영문 소문자, 숫자만 사용 가능합니다.</div>
+                </div>
               </dd>
             </dl>
 
@@ -169,6 +172,13 @@ function submitJoinForm() {
     errMsg = '올바른 이메일 형식을 입력해주세요. ex) onroom@onroom.com'
   }
 
+  // 생년월일
+  if (!formErr && !isValidBirthDate($('#birthdate').val())) {
+    formErr = true;
+    moveFocus = 'birthdate';
+    errMsg = '생년월일은 오늘 이후 날짜를 선택할 수 없습니다.';
+  }
+
   // 에러가 하나라도 잡혔으면 여기서 한 번만 alert 후 종료 (각각 alert 띄우니 사용자 편의성 매우 떨어짐)
   if (formErr) {
     alert(errMsg);
@@ -204,7 +214,7 @@ function submitJoinForm() {
 
 function bindEvents() {
 
-  // 아이디 (영어 소문자, 숫자 사용 가능)
+  // 아이디 (영어 소문자, 숫자만 사용 가능)
   $('#username').on('input', function (e) {
     let filtered = $(this).val().toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 20);
     $(this).val(filtered);
@@ -215,6 +225,26 @@ function bindEvents() {
       $(this).removeClass('is-valid').addClass('is-invalid');
     }
 
+  });
+
+  // 아이디 중복확인 버튼
+  $('#checkIdBtn').on('click', function() {
+    let username = $.trim($('#username').val());
+
+    if (!isValidUsername(username)) {
+      alert('아이디는 6~20자의 영문 소문자, 숫자만 사용 가능합니다.');
+      $('#username').focus();
+      return;
+    }
+
+    ajaxForm('<c:url value="/duplicateId.do"/>', { username:username }, function (res) {
+      if (res.error === 'N') {
+        alert(res.successMsg);
+        $('#username').removeClass('is-invalid').addClass('is-valid');
+      } else {
+        $('#username').removeClass('is-valid').addClass('is-invalid');
+      }
+    });
   });
 
   // 비밀번호
@@ -263,6 +293,20 @@ function bindEvents() {
     }
   });
 
+  // 생년월일
+  const today = new Date().toISOString().split('T')[0];
+  console.log(today);
+
+  $('#birthdate').on('change', function () {
+    const val = $(this).val();
+
+    if (val && val > today) {
+      alert('생년월일은 오늘 이후 날짜를 선택할 수 없습니다.');
+      $(this).val('');
+    }
+
+  });
+
 }
 
 // 아이디 (영어/숫자)
@@ -302,9 +346,15 @@ function isValidEmail(val) {
 
 // 생년월일
 function isValidBirthDate(val) {
+  const today = new Date().toISOString().split('T')[0];
   val = $.trim(val);
+
   const regex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
-  return regex.test(val);
+  if (!regex.test(val)) return false;
+
+  if (val > today) return false;
+
+  return true;
 }
 
 // 전화번호: 숫자만 남기기 & 11자리 제한
@@ -319,36 +369,38 @@ function formatKRPhone(d) {
   return d.slice(0,3) + '-' + d.slice(3, d.length-4) + '-' + d.slice(-4);
 }
 
-function ajaxForm(a, b, c) {
-  var d = !0
-          , f = "application/x-www-form-urlencoded; charset=UTF-8";
-  "object" === $.type(b) && b instanceof FormData && (f = d = !1);
-  $.ajax({
-    type: "post",
-    url: a,
-    cache: !1,
-    data: b,
-    processData: d,
-    contentType: f,
-    dataType: "json",
-    success: function(e) {
-      if ("N" == e.error)
-        "undefined" !== $.type(e.redirect) && "" != $.trim(e.redirect) && ("reload" == $.trim(e.redirect) ? document.location.reload(!0) : document.location.href = $.trim(e.redirect));
-      else {
-        var g = 0;
-        "undefined" !== $.type(e.inputArr) && $.each(e.inputArr, function(h, k) {
-          0 == g && $("#" + h).focus();
-          g++
-        });
-        "undefined" !== $.type(e.errorTitle) && "" != $.trim(e.errorTitle) && alert(e.errorMsg)
-      }
-      "function" === $.type(c) && c(e)
-    },
-    error: function(e, g, h) {
-      alert("[" + e.status + "] " + h)
-    }
-  })
-}
+
+//
+// function ajaxForm(a, b, c) {
+//   var d = !0
+//           , f = "application/x-www-form-urlencoded; charset=UTF-8";
+//   "object" === $.type(b) && b instanceof FormData && (f = d = !1);
+//   $.ajax({
+//     type: "post",
+//     url: a,
+//     cache: !1,
+//     data: b,
+//     processData: d,
+//     contentType: f,
+//     dataType: "json",
+//     success: function(e) {
+//       if ("N" == e.error)
+//         "undefined" !== $.type(e.redirect) && "" != $.trim(e.redirect) && ("reload" == $.trim(e.redirect) ? document.location.reload(!0) : document.location.href = $.trim(e.redirect));
+//       else {
+//         var g = 0;
+//         "undefined" !== $.type(e.inputArr) && $.each(e.inputArr, function(h, k) {
+//           0 == g && $("#" + h).focus();
+//           g++
+//         });
+//         "undefined" !== $.type(e.errorTitle) && "" != $.trim(e.errorTitle) && alert(e.errorMsg)
+//       }
+//       "function" === $.type(c) && c(e)
+//     },
+//     error: function(e, g, h) {
+//       alert("[" + e.status + "] " + h)
+//     }
+//   })
+// }
 
 </script>
 

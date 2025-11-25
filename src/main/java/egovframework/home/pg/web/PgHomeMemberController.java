@@ -65,9 +65,33 @@ public class PgHomeMemberController {
         return ResponseEntity.status(HttpStatus.CREATED).body(retMap);
     }
 
+    /**
+     * 회원가입 - 아이디 중복 체크
+     * @param req
+     * @param res
+     * @param model
+     * @param param
+     * @return 아이디 중복 여부
+     * @throws Exception
+     */
+    @RequestMapping("/duplicateId.do")
+    public ResponseEntity<?> duplicateId(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
+        HashMap<String, Object> retMap = new HashMap<>();
+
+        if (pgHomeMemberService.existsByUsername(param)) {
+            retMap.put("error", "Y");
+            retMap.put("errorTitle", "회원가입");
+            retMap.put("errorMsg", "이미 존재하는 아이디입니다.");
+        } else {
+            retMap.put("error", "N");
+            retMap.put("successTitle", "Success");
+            retMap.put("successMsg", "사용가능한 아이디입니다.");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(retMap);
+    }
 
     // TODO: 회원 상태 변경(ACTIVE, INACTIVE, DELETED)
     // @PreAuthorize("hasRole('ADMIN')") 붙이기
-
 
 }
