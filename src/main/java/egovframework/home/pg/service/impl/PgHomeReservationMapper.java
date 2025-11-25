@@ -10,4 +10,9 @@ import java.util.List;
 public interface PgHomeReservationMapper {
     List<EgovMap> getReservationList(HashMap<String, Object> param) throws Exception;
 
+    int setReservationMerge(HashMap<String, Object> param) throws Exception;
+
+    boolean isDuplicatedReservation(HashMap<String, Object> param) throws Exception;
+
+    EgovMap getReservationById(Long reservationId) throws Exception;
 }

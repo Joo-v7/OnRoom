@@ -4,15 +4,127 @@
 
     <!-- 예약 전체 조회 -->
     <select id="getReservationList" parameterType="hashMap" resultType="egovMap">
-        SELECT *
-        FROM RESERVATION
+        SELECT
+         rv.reservation_id,
+         rv.room_id,
+         rv.member_id,
+         rv.type,
+         rv.name,
+         rv.agenda,
+         rv.attendee_count,
+         rv.status,
+         rv.start_date,
+         rv.end_date,
+         rv.start_at,
+         rv.end_at,
+         rv.days_of_week,
+         rv.attachment,
+         rv.reg_dt,
+         r.name AS roomName
+        FROM RESERVATION rv
+        JOIN ROOM r ON rv.room_id = r.room_id
+        WHERE status = 'APPROVED'
+        OR status = 'PENDING'
     </select>
 
     <!-- 예약 리스트 조회 -->
 
-    <!-- 예약 등록 -->
+    <!-- 예약 조회 by reservation_id (PK) -->
+    <select id="getReservationById" parameterType="Long" resultType="egovMap">
+        SELECT
+            rv.reservation_id,
+            rv.room_id,
+            rv.member_id,
+            rv.type,
+            rv.name,
+            rv.agenda,
+            rv.attendee_count,
+            rv.status,
+            rv.start_date,
+            rv.end_date,
+            rv.start_at,
+            rv.end_at,
+            rv.days_of_week,
+            rv.attachment,
+            rv.reg_dt,
+            r.name AS roomName
+        FROM RESERVATION rv
+        JOIN ROOM r ON rv.room_id = r.room_id
+        WHERE rv.reservation_id = #{reservationId, jdbcType=INTEGER}
+    </select>
 
-    <!-- 예약 수정 -->
+    <!-- 예약 Merge -->
+    <insert id="setReservationMerge" parameterType="hashMap">
+        INSERT INTO RESERVATION
+        (
+         room_id,
+         member_id,
+         type,
+         name,
+         agenda,
+         attendee_count,
+         start_date,
+         end_date,
+         start_at,
+         end_at,
+         days_of_week,
+         attachment,
+         reg_dt
+        )
+        VALUES
+            (
+             #{roomId, jdbcType=INTEGER},
+             #{memberId, jdbcType=INTEGER},
+             #{type, jdbcType=CHAR},
+             #{name, jdbcType=VARCHAR},
+             #{agenda, jdbcType=VARCHAR},
+             #{attendeeCount, jdbcType=INTEGER},
+             #{startDate, jdbcType=DATE},
+             #{endDate, jdbcType=DATE},
+             #{startAt, jdbcType=TIMESTAMP},
+             #{endAt, jdbcType=TIMESTAMP},
+             #{daysOfWeek, jdbcType=VARCHAR},
+             #{attachment, jdbcType=VARCHAR},
+             NOW()
+            )
+        ON DUPLICATE KEY UPDATE
+            room_id = #{roomId, jdbcType=INTEGER},
+            type = #{type, jdbcType=CHAR},
+            name = #{name, jdbcType=VARCHAR},
+            agenda = #{agenda, jdbcType=VARCHAR},
+            attendee_count = #{attendeeCount, jdbcType=INTEGER},
+            start_date = #{startDate, jdbcType=DATE},
+            end_date = #{endDate, jdbcType=DATE},
+            start_at = #{startAt, jdbcType=TIMESTAMP},
+            end_at = #{endAt, jdbcType=TIMESTAMP},
+            days_of_week = #{daysOfWeek, jdbcType=VARCHAR},
+            attachment = #{attachment, jdbcType=VARCHAR},
+            updt_dt = NOW()
+        <if test="status != null and status != ''">
+            , status = #{status, jdbcType=VARCHAR}
+        </if>
+    </insert>
+
+    <!-- 회의 중복 조회 -->
+    <select id="isDuplicatedReservation" parameterType="hashMap" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM RESERVATION
+            WHERE room_id = #{roomId, jdbcType=BIGINT}
+              AND status IN ('PENDING', 'APPROVED')
+              -- 수정이면 자기 자신 제외
+              AND (#{reservationId, jdbcType=BIGINT} IS NULL
+                OR reservation_id != #{reservationId, jdbcType=BIGINT})
+              -- 날짜 체크
+              AND COALESCE(#{endDate, jdbcType=DATE}, #{startDate, jdbcType=DATE}) >= start_date
+              AND COALESCE(end_date, start_date) >= #{startDate, jdbcType=DATE}
+              -- 시간 체크
+              AND NOT (
+                  #{startAt, jdbcType=TIME} >= end_at
+                      OR start_at >= #{endAt, jdbcType=TIME}
+                )
+        )
+    </select>
 
 
     <!-- 예약 취소 -->
