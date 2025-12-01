@@ -3,19 +3,16 @@ package egovframework.home.pg.common.advice;
 import egovframework.home.pg.exception.ArgumentNotValidException;
 import egovframework.home.pg.exception.ConflictException;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 
 
@@ -25,20 +22,27 @@ import java.util.HashMap;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 404 - web.xml에 DispatcherServlet이 해당 예외 던지도록 설정함.
+    /**
+     * NoHandlerFoundException
+     * DispatcherService가 처리할 수 없는 요청 (404) 예외 처리
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    // web.xml에 DispatcherServlet이 해당 예외 던지도록 설정함, 공통 헤더 (header.jsp) 에서 처리
     @ExceptionHandler(NoHandlerFoundException.class)
     public void handleNoHandlerFoundException(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
+        String errorMsg = "요청하신 페이지를 찾을 수 없습니다.";
 
-        out.println("<script>");
-        out.println("alert('요청하신 페이지를 찾을 수 없습니다.');");
-        out.println("history.back();");
-        out.println("</script>");
-        out.flush();
+        request.getSession().setAttribute("errorMsg", errorMsg);
+        response.sendRedirect(request.getContextPath() + "/");
     }
 
-    // DB 에러
+    /**
+     * DataAccessException
+     * DB 데이터 처리 중 발생한 예외 처리
+     * @return 에러 응답 map
+     */
     @ExceptionHandler({DataAccessException.class})
     public ResponseEntity<?> handleDataAccessException() {
         HashMap<String, Object> retMap = new HashMap<>();
@@ -49,7 +53,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(retMap);
     }
 
-    // Multipart 에러
+    /**
+     * MultipartException
+     * @return 에러 응답 map
+     */
     @ExceptionHandler({MultipartException.class})
     public ResponseEntity<?> handleMultipartException() {
         HashMap<String, Object> retMap = new HashMap<>();
@@ -60,7 +67,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(retMap);
     }
 
-    // NPE 에러
+    /**
+     * NullPointerException
+     * @return 에러 응답 map
+     */
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<?> handleNullPointerException() {
         HashMap<String, Object> retMap = new HashMap<>();
@@ -72,9 +82,25 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 리소스가 중복 예외 처리
+     * IllegalArgumentException
+     * @param e
+     * @return 에러 응답 map
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException e) {
+        HashMap<String, Object> retMap = new HashMap<>();
+        retMap.put("error", "Y");
+        retMap.put("errorTitle", "Argument Error");
+        retMap.put("errorMsg", e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(retMap);
+    }
+
+    /**
+     * ConflictException
+     * 리소스가 중복 커스텀 예외 처리
      * @param e - ConflictException
-     * @return HashMap
+     * @return 에러 응답 map
      */
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<?> handleConflictException(ConflictException e) {
@@ -86,9 +112,10 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 데이터 유효성 검사 예외 처리
+     * ArgumentNotValidException
+     * 데이터 유효성 검사 커스텀 예외 처리
      * @param e
-     * @return HashMap
+     * @return 에러 응답 map
      */
     @ExceptionHandler(ArgumentNotValidException.class)
     public ResponseEntity<?> handleArgumentNotValidException(ArgumentNotValidException e) {
@@ -96,17 +123,6 @@ public class GlobalExceptionHandler {
         retMap.put("error", "Y");
         retMap.put("errorTitle", "Argument Not Valid");
         retMap.put("errorMsg", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(retMap);
-    }
-
-    // IllegalArgumentException
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException e) {
-        HashMap<String, Object> retMap = new HashMap<>();
-        retMap.put("error", "Y");
-        retMap.put("errorTitle", "Argument Error");
-        retMap.put("errorMsg", e.getMessage());
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(retMap);
     }
 
