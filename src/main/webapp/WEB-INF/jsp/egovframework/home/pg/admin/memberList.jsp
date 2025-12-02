@@ -249,7 +249,7 @@ function event() {
 
   // 검색 입력: 한글/영어/숫자만 가능
   $('#searchQuery').on('input', function () {
-    const filtered = $(this).val().replace(/[^0-9a-zA-Z\s]/g, '');
+    const filtered = $(this).val().replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9a-zA-Z\s]/g, '');
     $(this).val(filtered);
   })
 

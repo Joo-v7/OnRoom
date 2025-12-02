@@ -333,7 +333,7 @@ function isValidUsername(val) {
   return regex.test(val);
 }
 
-// 비밀번호 (소문자/숫자/특수문자
+// 비밀번호 (소문자/숫자/특수문자)
 function isValidPassword(val) {
   val = $.trim(val);
   const regex = /^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()\-=+{}\[\]:;'",.<>?\\/|~`])[a-z0-9!@#$%^&*()\-=+{}\[\]:;'",.<>?\\/|~`]{6,20}$/;

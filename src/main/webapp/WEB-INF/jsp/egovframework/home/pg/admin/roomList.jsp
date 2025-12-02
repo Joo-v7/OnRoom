@@ -148,7 +148,7 @@
 
                 <div class="mb-3">
                   <label for="roomName" class="form-label fw-bold">회의실명 <span class="text-danger mb-3">*</span></label>
-                  <input id="roomName" name="name" type="text" class="form-control" placeholder="회의실명을 입력하세요" required>
+                  <input id="roomName" name="name" type="text" class="form-control" placeholder="회의실명을 입력하세요" required maxlength="100">
                 </div>
 
                 <div class="mb-3">
@@ -158,7 +158,7 @@
 
                 <div class="mb-3">
                   <label for="description" class="form-label fw-bold">설명 <span class="text-danger mb-3">*</span></label>
-                  <textarea id="description" name="description" class="form-control" rows="3" placeholder="회의실 설명을 입력하세요" required></textarea>
+                  <textarea id="description" name="description" class="form-control" rows="3" placeholder="회의실 설명을 입력하세요" required maxlength="255"></textarea>
                 </div>
 
                 <div class="mb-3">
@@ -310,7 +310,19 @@ function event() {
   $('#searchQuery').on('input', function () {
     const filtered = $(this).val().replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9a-zA-Z\s]/g, '');
     $(this).val(filtered);
-  })
+  });
+
+  // 회의실명 입력: 한글/영어/숫자만 가능
+  $('#roomName').on('input', function () {
+    const filtered = $(this).val().replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9a-zA-Z\s]/g, '');
+    $(this).val(filtered);
+  });
+
+  // 회의실명 입력: 한글/영어/숫자만 가능
+  $('#description').on('input', function () {
+    const filtered = $(this).val().replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9a-zA-Z\s]/g, '');
+    $(this).val(filtered);
+  });
 
   // 사용/미사용 버튼 클릭
   $('.dataList').on('click', '.useYnBtn', function () {
@@ -354,6 +366,41 @@ function event() {
     const modalForm = $('#modalForm')[0];
     const formData = new FormData(modalForm);
 
+    // === 제출 유효성 체크 ===
+    let formErr = false;
+    let moveFocus = '';
+    let errMsg = '';
+
+    // 회의실명
+    if (!formErr && !isValidRoomName($('#roomName').val())) {
+      formErr = true;
+      moveFocus = 'roomName';
+      errMsg = '회의실명은 100자 이하의 영문자, 한글, 숫자만 입력 가능합니다.';
+    }
+
+    // 수용인원
+    if (!formErr && ($('#capacity').val() === '')) {
+      formErr = true;
+      moveFocus = 'capacity';
+      errMsg = '수용인원은 숫자만 입력 가능합니다.';
+    }
+
+    // 설명
+    if (!formErr && !isValidDescription($('#description').val())) {
+      formErr = true;
+      moveFocus = 'description';
+      errMsg = '설명은 255자 이하의 영문자, 한글, 숫자만 입력 가능합니다.';
+    }
+
+    if (formErr) {
+      alert(errMsg);
+      if (moveFocus) {
+        $('#' + moveFocus).focus();
+      }
+      return;
+    }
+
+
     // merge
     ajaxForm('<c:url value="/admin/setRoomMerge.do"/>', formData, function(res) {
       if ($.trim(res.error) == 'N') {
@@ -393,6 +440,21 @@ function formDateTime(dataString) {
 
   return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes;
 }
+
+// 회의실명 (한글/영어/숫자/공백)
+function isValidRoomName(val) {
+  val = $.trim(val);
+  const regex = /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9\s]{1,100}$/;
+  return regex.test(val);
+}
+
+// 회의실 설명 입력 (한글/영어/숫자/공백)
+function isValidDescription(val) {
+  val = $.trim(val);
+  const regex = /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9\s]{1,255}$/;
+  return regex.test(val);
+}
+
 
 // 회의실 등록/수정 모달창
 // (action, roomId)
