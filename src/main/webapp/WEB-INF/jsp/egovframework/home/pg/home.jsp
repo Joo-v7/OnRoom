@@ -10,6 +10,20 @@
 
 <jsp:include page="/WEB-INF/jsp/egovframework/home/pg/common/header.jsp"/>
 
+<style>
+  .ratio-wrapper {
+    aspect-ratio: 16 / 9;     /* 카드의 고정 비율 */
+    overflow: hidden;          /* 넘치는 부분 잘라내기 */
+  }
+
+  .ratio-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;          /* 비율 유지하면서 꽉 채움 */
+    object-position: center;
+  }
+</style>
+
 <!-- Page content-->
 <div class="container-xl">
   <div class="row py-5">
@@ -27,6 +41,7 @@
 
         <form id="searchForm" class="d-flex align-items-center gap-3 w-50">
           <input type="hidden" id="movePage" name="movePage" value="<c:out value='${param.movePage}' default='1' />">
+          <input type="hidden" id="recordCnt" name="recordCnt" value="<c:out value='${param.recordCnt}' default='8' />">
           <input type="hidden" name="orderType" value="<c:out value='${param.orderType}'/>">
 
             <select id="searchStatus" name="searchStatus" class="form-select w-auto">
@@ -94,11 +109,15 @@ function dataList() {
       let totalCnt = Number(data.dataMap.totalCnt);
 
       $.each(data.dataMap.list, function(idx, room) {
-        let imgUrl = room.imageUrl ? room.imageUrl : '<c:url value="/assets/room/defaultRoomImage.jpg"/>';
+        // 이미지
+        const imagePath = '<c:url value="/attachment/image/" />';
+        let imgUrl = room.imageUrl ? (imagePath + room.imageUrl) : '<c:url value="/assets/room/defaultRoomImage.jpg"/>';
 
         dataHtml += '<div class="col-12 col-md-6 col-lg-3 mb-4">';
         dataHtml += '<div class="card mb-4">';
+        dataHtml += '<div class="ratio-wrapper">';
         dataHtml += '<img class="card-img-top" src="' + imgUrl + '" alt="회의실 이미지"/>'
+        dataHtml += '</div>';
         dataHtml += '<div class="card-body">';
         dataHtml += '<div class="small text-muted">' + '가민 | 회의실' + '</div>';
         dataHtml += '<h2 class="card-title h4">' + room.name + '</h2>';

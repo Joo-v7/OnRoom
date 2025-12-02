@@ -59,8 +59,8 @@ public class PgHomeIndexController {
             int movePage = ObjectUtils.isEmpty(movePageObject) ? 1 : NumberUtils.toInt(movePageObject.toString());
             param.put("movePage", movePage);
 
-            // 한페이지 레코드 개수
-            double recordCnt = NumberUtils.toDouble((String) param.get("recordCnt"),10);
+            // 한 페이지 레코드 개수
+            double recordCnt = NumberUtils.toDouble((String) param.get("recordCnt"),8);
             if (StringUtils.isNotEmpty((String) param.get("recordCnt"))) recordCnt = NumberUtils.toDouble((String) param.get("recordCnt"));
             param.put("recordCnt", (int)recordCnt);
 
