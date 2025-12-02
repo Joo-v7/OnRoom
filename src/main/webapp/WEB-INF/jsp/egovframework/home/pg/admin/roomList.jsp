@@ -466,6 +466,8 @@ function roomModal(action, roomId) {
   // $('#currentImageName').val('');
   $('#currentImage').empty();
 
+  $('#roomName').prop('readonly', action === 'update'); // 회의실명은 UNIQUE라서 수정일때 readonly
+
   // 회의실 등록일떄
   if (action === 'insert') {
     $('#modalTitle').text('회의실 등록');
