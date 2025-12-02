@@ -3,6 +3,7 @@ package egovframework.home.pg.common.security.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import egovframework.home.pg.common.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
@@ -48,6 +50,17 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         }
 
         request.getSession().setAttribute("errorMsg", errorMsg);
-        response.sendRedirect(request.getContextPath() + "/login.do");
+
+        log.info("=== auth fail === request URI: {}", request.getRequestURI());
+        log.info("=== auth fail === referer URI: {}", request.getHeader("referer"));
+
+        String referer = request.getHeader("referer");
+
+        if (referer != null && referer.contains("admin")) {
+            response.sendRedirect(request.getContextPath() + "/admin/login.do");
+        } else {
+            response.sendRedirect(request.getContextPath() + "/login.do");
+        }
+
     }
 }
