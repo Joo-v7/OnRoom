@@ -35,7 +35,15 @@ public class PgHomeMemberAdminController {
     private final PgHomeMemberService pgHomeMemberService;
     private final PgHomeMemberRoleService pgHomeMemberRoleService;
 
-    // 회원 관리 - 회원 목록 페이지
+    /**
+     * 회원 관리 - 회원 목록 페이지
+     * @param req
+     * @param res
+     * @param model
+     * @param param
+     * @return 회원 목록 페이지
+     * @throws Exception
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/memberList.do")
     public String memberList(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
@@ -54,7 +62,15 @@ public class PgHomeMemberAdminController {
         return "home/pg/admin/memberList";
     }
 
-    // 회원 관리 - 회원 목록 데이터
+    /**
+     * 회원 관리 - 회원 목록 데이터
+     * @param req
+     * @param res
+     * @param model
+     * @param param
+     * @return 회원 데이터 리스트
+     * @throws Exception
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/getMemberList.do")
     public ResponseEntity<?> getMemberList(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {

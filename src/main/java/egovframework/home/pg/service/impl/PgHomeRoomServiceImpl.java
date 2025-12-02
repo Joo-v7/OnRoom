@@ -51,5 +51,53 @@ public class PgHomeRoomServiceImpl implements PgHomeRoomService {
         return pgHomeRoomMapper.getRoomTotalCnt(param);
     }
 
+    /**
+     * 회의실 관리 - 회의실 전체 조회
+     * @param param
+     * @return 회의실 데이터 리스트
+     * @throws DataAccessException
+     */
+    @Override
+    public List<EgovMap> getRoomListForAdmin(HashMap<String, Object> param) throws DataAccessException {
+        return pgHomeRoomMapper.getRoomListForAdmin(param);
+    }
 
+    /**
+     * 회의실 관리 - 회의실 전체 개수 조회
+     * @param param
+     * @return 회의실 전체 개수
+     * @throws DataAccessException
+     */
+    @Override
+    public Double getRoomTotalCntForAdmin(HashMap<String, Object> param) throws DataAccessException {
+        return pgHomeRoomMapper.getRoomTotalCntForAdmin(param);
+    }
+
+    /**
+     * 회의실 관리 - 회의실 Merge
+     * @param param
+     * @return 회의실
+     * @throws DataAccessException
+     */
+    @Override
+    public boolean setMergeRoom(HashMap<String, Object> param) throws DataAccessException {
+        boolean result = false;
+
+        if (pgHomeRoomMapper.setMergeRoom(param) > 0) {
+            result = true;
+        }
+
+        return result;
+    }
+
+    @Override
+    public boolean setRoomUseYnUpdate(HashMap<String, Object> param) throws DataAccessException {
+        boolean result = false;
+
+        if (pgHomeRoomMapper.setRoomUseYnUpdate(param) > 0) {
+            result = true;
+        }
+
+        return result;
+    }
 }

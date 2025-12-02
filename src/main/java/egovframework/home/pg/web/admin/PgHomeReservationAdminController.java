@@ -1,7 +1,6 @@
 package egovframework.home.pg.web.admin;
 
 import egovframework.home.pg.common.code.ReservationStatus;
-import egovframework.home.pg.common.security.user.PrincipalDetails;
 import egovframework.home.pg.service.PgHomeReservationService;
 import egovframework.home.pg.service.PgHomeRoomService;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +13,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +34,15 @@ public class PgHomeReservationAdminController {
     private final PgHomeReservationService pgHomeReservationService;
     private final PgHomeRoomService pgHomeRoomService;
 
+    /**
+     * 예약관리 페이지
+     * @param req
+     * @param res
+     * @param model
+     * @param param
+     * @return 예약관리 페이지
+     * @throws Exception
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/reservationList.do")
     public String reservationList(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
@@ -55,6 +61,15 @@ public class PgHomeReservationAdminController {
         return "home/pg/admin/reservationList";
     }
 
+    /**
+     * 예약 데이터 리스트
+     * @param req
+     * @param res
+     * @param model
+     * @param param
+     * @return 예약 데이터 리스트
+     * @throws Exception
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/getReservationList.do")
     public ResponseEntity<?> getReservationList(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
@@ -118,13 +133,20 @@ public class PgHomeReservationAdminController {
         return ResponseEntity.status(HttpStatus.OK).body(retMap);
     }
 
+    /**
+     * 예약 상태 업데이트
+     * @param req
+     * @param res
+     * @param param
+     * @return 예약 상태 업데이트 결과
+     * @throws Exception
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/setUpdateReservationStatus.do")
     public ResponseEntity<?> setUpdateReservationStatus(HttpServletRequest req, HttpServletResponse res, @RequestParam HashMap<String, Object> param) throws Exception {
         HashMap<String, Object> retMap = new HashMap<>();
 
         try {
-
             if (pgHomeReservationService.setUpdateReservationStatus(param)) {
                 retMap.put("error", "N");
                 retMap.put("successTitle", "Success");
@@ -136,7 +158,7 @@ public class PgHomeReservationAdminController {
             }
 
         } catch (DataAccessException | MultipartException | NullPointerException | IllegalArgumentException e) {
-            log.error("PgHomeBoardController:setUpdateReservationStatus.do error={}", e.getMessage());
+            log.error("== ADMIN == PgHomeBoardController:setUpdateReservationStatus.do error={}", e.getMessage());
             throw e;
         }
 

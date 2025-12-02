@@ -38,7 +38,7 @@
             <c:set var="selectedRoomId" value="${not empty param.roomId ? param.roomId : reservationData.roomId}" />
 
             <c:if test="${isUpdate}">
-              <input type="hidden" id="reservationId" name="reservationId" value="${reservationData.reservationId}" />
+              <input id="reservationId" name="reservationId" type="hidden" value="${reservationData.reservationId}" />
             </c:if>
 
             <p class="small"><span class="text-danger mb-3">*</span> 는 필수 입력 사항입니다.</p>
@@ -57,12 +57,12 @@
               <dd class="col-sm-5 d-flex align-items-center gap-3">
 
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="type" id="dateTypeOnce" value="D" checked>
+                  <input id="dateTypeOnce" name="type" class="form-check-input" type="radio" value="D" checked>
                   <label class="form-check-label" for="dateTypeOnce">일자</label>
                 </div>
 
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="type" id="dateTypeRegular" value="R"
+                  <input id="dateTypeRegular" name="type" class="form-check-input" type="radio" value="R"
                          ${isUpdate && reservationData.type eq 'R' ? 'checked' : ''}>
                   <label class="form-check-label" for="dateTypeRegular">정기</label>
                 </div>
@@ -74,7 +74,7 @@
             <dl class="row mb-3">
               <dt class="col-sm-2 col-form-label">회의명 <span class="text-danger">*</span></dt>
               <dd class="col-sm-6">
-                <input type="text" class="form-control" id="name" name="name"
+                <input id="name" name="name" type="text" class="form-control"
                        value="${isUpdate ? reservationData.name : ''}"
                        maxlength="20" placeholder="회의명을 입력하세요." required >
               </dd>
@@ -83,7 +83,7 @@
             <dl class="row mb-3">
               <dt class="col-sm-2 col-form-label">안건 <span class="text-danger">*</span></dt>
               <dd class="col-sm-6">
-                <input type="text" class="form-control" id="agenda" name="agenda"
+                <input id="agenda" name="agenda" type="text" class="form-control"
                        value="${isUpdate ? reservationData.agenda : ''}"
                        maxlength="50" placeholder="안건을 입력하세요." required>
               </dd>
@@ -102,14 +102,14 @@
             <dl class="row mb-3">
               <dt class="col-sm-2 col-form-label">회의일자 <span class="text-danger">*</span></dt>
               <dd class="col-sm-3">
-                <input type="date" class="date form-control" id="startDate" name="startDate" required
+                <input id="startDate" name="startDate" type="date" class="date form-control" required
                        value="<c:if test='${isUpdate}'><fmt:formatDate value='${reservationData.startDate}' pattern='yyyy-MM-dd'/></c:if>">
               </dd>
               <dd class="col-auto d-flex align-items-center justify-content-center px-0">
                 ~
               </dd>
               <dd class="col-sm-3">
-                <input type="date" class="date form-control" id="endDate" name="endDate"
+                <input id="endDate" name="endDate" type="date" class="date form-control"
                        value="<c:if test='${isUpdate}'><fmt:formatDate value='${reservationData.endDate}' pattern='yyyy-MM-dd'/></c:if>">
               </dd>
             </dl>
@@ -119,37 +119,37 @@
               <dd class="col-sm-10 d-flex gap-3 pt-2">
 
                 <div class="form-check form-check-inline">
-                  <input id="mon" class="form-check-input" type="checkbox" name="daysOfWeek" value="1"
+                  <input id="mon" name="daysOfWeek" class="form-check-input" type="checkbox" value="1"
                          <c:if test="${isUpdate and fn:contains(reservationData.daysOfWeek, '1')}">checked</c:if>>
                   <label class="form-check-label" for="mon">월</label>
                 </div>
 
                 <div class="form-check form-check-inline">
-                  <input id="tue" class="form-check-input" type="checkbox" name="daysOfWeek" value="2"
+                  <input id="tue" name="daysOfWeek" class="form-check-input" type="checkbox" value="2"
                          <c:if test="${isUpdate and fn:contains(reservationData.daysOfWeek, '2')}">checked</c:if>>
                   <label class="form-check-label" for="tue">화</label>
                 </div>
 
                 <div class="form-check form-check-inline">
-                  <input id="wed" class="form-check-input" type="checkbox" name="daysOfWeek" value="3"
+                  <input id="wed" name="daysOfWeek" class="form-check-input" type="checkbox" value="3"
                          <c:if test="${isUpdate and fn:contains(reservationData.daysOfWeek, '3')}">checked</c:if>>
                   <label class="form-check-label" for="wed">수</label>
                 </div>
 
                 <div class="form-check form-check-inline">
-                  <input id="thu" class="form-check-input" type="checkbox" name="daysOfWeek" value="4"
+                  <input id="thu" name="daysOfWeek" class="form-check-input" type="checkbox" value="4"
                          <c:if test="${isUpdate and fn:contains(reservationData.daysOfWeek, '4')}">checked</c:if>>
                   <label class="form-check-label" for="thu">목</label>
                 </div>
 
                 <div class="form-check form-check-inline">
-                  <input id="fri" class="form-check-input" type="checkbox" name="daysOfWeek" value="5"
+                  <input id="fri" name="daysOfWeek" class="form-check-input" type="checkbox" value="5"
                          <c:if test="${isUpdate and fn:contains(reservationData.daysOfWeek, '5')}">checked</c:if>>
                   <label class="form-check-label" for="fri">금</label>
                 </div>
 
                 <div class="form-check form-check-inline">
-                  <input id="sat" class="form-check-input" type="checkbox" name="daysOfWeek" value="6"
+                  <input id="sat" name="daysOfWeek" class="form-check-input" type="checkbox" value="6"
                          <c:if test="${isUpdate and fn:contains(reservationData.daysOfWeek, '6')}">checked</c:if>>
                   <label class="form-check-label" for="sat">토</label>
                 </div>
@@ -161,7 +161,7 @@
               <dt class="col-sm-2 col-form-label">회의시간 <span class="text-danger">*</span></dt>
               <dd class="col-sm-3">
                 <!-- min:06 / max:22 input type이 time이면 선택은 가능하지만 제출시 유효성 검사에서 걸러줌 -->
-                <input type="time" class="form-control" id="startAt" name="startAt" min="06:00" max="22:00" required
+                <input id="startAt" name="startAt" type="time" class="form-control" min="06:00" max="22:00" required
                        value="${isUpdate ? fn:substring(reservationData.startAt, 0, 5) : ''}">
               </dd>
               <dd class="col-auto d-flex align-items-center justify-content-center px-0">
@@ -169,7 +169,7 @@
               </dd>
               <dd class="col-sm-3">
                 <!-- min:06 / max:22 input type이 time이면 선택은 가능하지만 제출시 유효성 검사에서 걸러줌 -->
-                <input type="time" class="form-control" id="endAt" name="endAt" min="06:00" max="22:00" required
+                <input id="endAt" name="endAt" type="time" class="form-control" min="06:00" max="22:00" required
                        value="${isUpdate ? fn:substring(reservationData.endAt, 0, 5) : ''}">
               </dd>
               <dd class="offset-sm-2 col-sm-10">
@@ -180,8 +180,8 @@
             <dl class="row mb-3">
               <dt class="col-sm-2 col-form-label">첨부파일</dt>
               <dd class="col-sm-6">
-                <!-- TODO 첨부파일 수정?? -->
-                <input class="form-control" type="file" id="attachment" name="attachment">
+                <!-- TODO 첨부파일: 왜 파일을 보내줘도 안 들어가는가?? -->
+                <input id="attachment" name="attachment" class="form-control" type="file">
               </dd>
             </dl>
 

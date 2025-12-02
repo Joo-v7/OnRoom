@@ -9,20 +9,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.egovframe.rte.psl.dataaccess.util.EgovMap;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.faces.annotation.RequestMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -160,8 +157,8 @@ public class PgHomeReservationController {
                 String projectPath = req.getServletContext().getRealPath("/attachment/reservation");
                 log.info("=== 첨부파일 upload path => {}", projectPath);
 
-                String originalFilename = attachment.getOriginalFilename();
-                String savedName = UUID.randomUUID() + "_" + originalFilename;
+                String originalFileName = attachment.getOriginalFilename();
+                String savedName = UUID.randomUUID() + "_" + originalFileName;
 
                 File uploadDir = new File(projectPath);
                 if (!uploadDir.exists()) {
@@ -242,7 +239,7 @@ public class PgHomeReservationController {
             @RequestParam("file") String fileName
     ) throws Exception {
 
-        // webapp 내부 실제 저장 폴더
+        // 내부 실제 저장 폴더
         String path = req.getServletContext().getRealPath("/attachment/reservation");
         log.info("=== attachment real path => {}", path);
 
@@ -256,10 +253,8 @@ public class PgHomeReservationController {
             String backUrl = req.getHeader("Referer");
             if (backUrl != null) {
                 res.sendRedirect(backUrl);
-            } else {
-                res.sendRedirect(req.getContextPath() + "/");
-
             }
+
             res.sendRedirect(req.getContextPath() + "/");
 
             return;

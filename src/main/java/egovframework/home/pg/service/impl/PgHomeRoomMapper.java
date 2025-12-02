@@ -15,12 +15,33 @@ public interface PgHomeRoomMapper {
     List<EgovMap> getRoomList(HashMap<String, Object> param) throws DataAccessException;
 
     /**
+     * 회의실 단일 조회
+     */
+    EgovMap getRoomById(HashMap<String, Object> param) throws DataAccessException;
+
+    /**
      * 사용가능한 회의실 전체 개수
      */
     Double getRoomTotalCnt(HashMap<String, Object> param) throws DataAccessException;
 
     /**
-     * 회의실 단일 조회
+     * 관리자 - 회의실 전체 조회
      */
-    EgovMap getRoomById(HashMap<String, Object> param) throws DataAccessException;
+    List<EgovMap> getRoomListForAdmin(HashMap<String, Object> param) throws DataAccessException;
+
+    /**
+     * 관리자 - 회의실 전체 개수 조회
+     */
+    Double getRoomTotalCntForAdmin(HashMap<String, Object> param) throws DataAccessException;
+
+    /**
+     * 관리자 - 회의실 Merge
+     */
+    int setMergeRoom(HashMap<String, Object> param) throws DataAccessException;
+
+    /**
+     * 관리자 - 회의실 사용여부 수정
+     */
+    int setRoomUseYnUpdate(HashMap<String, Object> param) throws DataAccessException;
+
 }

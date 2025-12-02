@@ -9,6 +9,7 @@
           , r.name
           , r.description
           , r.capacity
+          , r.image_name
           , r.image_url
           , r.use_yn
           , r.reg_dt
@@ -37,6 +38,7 @@
              , r.name
              , r.description
              , r.capacity
+             , r.image_name
              , r.image_url
              , r.use_yn
              , r.reg_dt
@@ -58,50 +60,114 @@
         </where>
     </select>
 
+
     <!-- === 관리자 === -->
 
+    <!-- 회의실 전체 조회 -->
     <select id="getRoomListForAdmin" parameterType="hashMap" resultType="egovMap">
         SELECT
         r.room_id
         , r.name
         , r.description
         , r.capacity
+        , r.image_name
         , r.image_url
         , r.use_yn
         , r.reg_dt
         , r.updt_dt
         FROM ROOM r
         <where>
-            <if test="useYn != null and useYn != ''">
-                AND r.use_yn #{useYn, jdbcType=CHAR}
+            <if test="searchType != null and searchType != ''">
+                AND r.use_yn = #{searchType, jdbcType=CHAR}
+            </if>
+            <if test="searchQuery != null and searchQuery != ''">
+                AND r.name LIKE CONCAT('%', #{searchQuery, jdbcType=VARCHAR}, '%')
             </if>
         </where>
-        ORDER BY r.reg_dt DESC
-        LIMIT #{limitStart, jdbcType=INTEGER}, #{recordCnt, jdbcType=INTEGER}
+        <choose>
+            <when test='orderType == "name"'>ORDER BY r.name ASC</when>
+            <when test='orderType == "regDt"'>ORDER BY r.reg_dt DESC</when>
+            <otherwise>ORDER BY r.room_id ASC</otherwise>
+        </choose>
+        <if test="limitStart != null and recordCnt != null">
+            LIMIT #{limitStart, jdbcType=INTEGER}, #{recordCnt, jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <!-- 회의실 전체 개수 조회 -->
+    <select id="getRoomTotalCntForAdmin" parameterType="hashMap" resultType="Double">
+        SELECT COUNT(*)
+        FROM ROOM
+        <where>
+            <if test="useYn != null and useYn != ''">
+                AND use_yn = #{useYn, jdbcType=CHAR}
+            </if>
+            <if test='searchQuery != null and searchQuery != ""'>
+                AND name LIKE CONCAT('%', #{searchQuery, jdbcType=VARCHAR}, '%')
+            </if>
+        </where>
     </select>
 
     <!-- 회의실 - Merge -->
     <insert id="setMergeRoom" parameterType="hashMap">
         INSERT INTO ROOM
         (
-         name
-         , description
-         , capacity
-         <if test="imageUrl != null and imageUrl != ''">, image_url</if>
-         , reg_dt
+         <if test="roomId != null and roomId != ''">
+             room_id,
+         </if>
+          name,
+          description,
+          capacity,
+         <if test="imageName != null and imageName != ''">image_name,</if>
+         <if test="imageUrl != null and imageUrl != ''">image_url,</if>
+          use_yn,
+          reg_dt
         )
         VALUES
             (
-             #{name, jdbcType=VARCHAR}
-             , #{description, jdbcType=VARCHAR}
-             , #{capacity, jdbcType=INTEGER}
-             <if test="imageUrl != null and imageUrl != ''">
-                 , image_url = #{imageUrl, jdbcType=VARCHAR}
+             <if test="roomId != null and roomId != ''">
+                 #{roomId, jdbcType=INTEGER},
              </if>
+             #{name, jdbcType=VARCHAR},
+             #{description, jdbcType=VARCHAR},
+             #{capacity, jdbcType=INTEGER},
+             <if test="imageName != null and imageUrl != ''">
+                 #{imageName, jdbcType=VARCHAR},
+             </if>
+             <if test="imageUrl != null and imageUrl != ''">
+                 #{imageUrl, jdbcType=VARCHAR},
+             </if>
+             #{useYn, jdbcType=CHAR},
              NOW()
         )
         ON DUPLICATE KEY UPDATE
-            name =
+            <if test="name != null and name!= ''">
+                name = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description, jdbcType=VARCHAR},
+            </if>
+            <if test="capacity != null and capacity != ''">
+                capacity = #{capacity, jdbcType=INTEGER},
+            </if>
+            <if test="imageName != null">
+                image_name = #{imageName, jdbcType=VARCHAR},
+            </if>
+            <if test="imageUrl != null">
+                image_url = #{imageUrl, jdbcType=VARCHAR},
+            </if>
+            <if test="useYn != null and useYn != ''">
+                use_yn = #{useYn, jdbcType=VARCHAR},
+            </if>
+            updt_dt = NOW()
     </insert>
+
+    <!-- 회의실 사용여부 수정 -->
+    <update id="setRoomUseYnUpdate" parameterType="hashMap">
+        UPDATE ROOM
+        SET use_yn = #{useYn, jdbcType=CHAR},
+            updt_dt = NOW()
+        WHERE room_id = #{roomId, jdbcType=INTEGER}
+    </update>
 
 </mapper>

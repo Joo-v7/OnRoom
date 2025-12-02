@@ -21,4 +21,25 @@ public interface PgHomeRoomService {
      * 회의실 단일 조회
      */
     EgovMap getRoomById(HashMap<String, Object> param) throws DataAccessException;
+
+    /**
+     * 관리자 - 회의실 전체 조회
+     */
+    List<EgovMap> getRoomListForAdmin(HashMap<String, Object> param) throws DataAccessException;
+
+    /**
+     * 관리자 - 회의실 전체 개수 조회
+     */
+    Double getRoomTotalCntForAdmin(HashMap<String, Object> param) throws DataAccessException;
+
+    /**
+     * 관리자 - 회의실 Merge
+     */
+    boolean setMergeRoom(HashMap<String, Object> param) throws DataAccessException;
+
+    /**
+     * 관리자 - 회의실 사용여부 수정
+     */
+    boolean setRoomUseYnUpdate(HashMap<String, Object> param) throws DataAccessException;
+
 }
