@@ -43,6 +43,8 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
         if (!pgHomeMemberService.existsByUsername(username)) {
             // Naver OAuth2의 응답값 -> Member 값
             HashMap<String, Object> memberMap = new HashMap<String, Object>();
+            String isOauth = "Y";
+            String oauthProvider = "NAVER";
             String password = "naver";
             String name = StringUtils.stripToEmpty((String)response.get("name"));
             String phone = StringUtils.stripToEmpty((String)response.get("mobile"));
@@ -58,7 +60,9 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
             memberMap.put("email", email);
             memberMap.put("birthdate", birthdate);
             // OAuth ROLE 하드 코딩
-            memberMap.put("roleId", "3"); // 1: ROLE_ADMIN, 2:ROLE_USER, 3: ROLE_OAUTH
+            memberMap.put("roleId", "2"); // 1: ROLE_ADMIN, 2:ROLE_USER
+            memberMap.put("isOauth", isOauth);
+            memberMap.put("oauthProvider", oauthProvider);
 
             try {
                 pgHomeMemberService.setMemberMerge(memberMap);

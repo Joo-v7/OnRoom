@@ -1,6 +1,7 @@
 package egovframework.home.pg.common.security.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -18,7 +19,11 @@ public class CustomOAuthAuthenticationFailureHandler implements AuthenticationFa
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         log.error("OAuth 인증 실패: {}", exception.getMessage());
-        String errorMsg = "소셜 로그인에 실패했습니다.";
+        String errorMsg = "소셜 로그인에 실패했습니다. \\n";
+
+        if (exception instanceof LockedException) {
+            errorMsg += exception.getMessage();
+        }
 
         request.getSession().setAttribute("errorMsg", errorMsg);
         response.sendRedirect(request.getContextPath() + "/login.do");

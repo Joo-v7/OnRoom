@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
 
     /**
      * ConflictException
-     * 리소스가 중복 커스텀 예외 처리
+     * 리소스 중복 커스텀 예외 처리
      * @param e - ConflictException
      * @return 에러 응답 map
      */
