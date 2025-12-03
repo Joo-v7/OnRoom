@@ -482,7 +482,6 @@ function roomModal(action, roomId) {
     ajaxForm('<c:url value="/admin/getRoom.do"/>', {roomId: roomId}, function (res) {
       if (res.error === 'N') {
         const data = res.dataMap;
-        console.log(data);
 
         $('#roomId').val(data.roomId);
         $('#roomName').val(data.name);

@@ -139,5 +139,66 @@ public class PgHomeMemberAdminController {
 
     }
 
-    // TODO: 회원 수정 (권한, 상태)
+    /**
+     * 회원 관리 - 회원 단일 데이터
+     * @param req
+     * @param res
+     * @param model
+     * @param memberId
+     * @return 회원 단일 데이터
+     * @throws Exception
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping("/getMember.do")
+    public ResponseEntity<?> getMember(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam Long memberId) throws Exception {
+        HashMap<String, Object> retMap = new HashMap<>();
+
+        try {
+            List<HashMap<String, String>> statusList = new ArrayList<>();
+
+            // 회원 상태
+            for (MemberStatus status : MemberStatus.values()) {
+                HashMap<String, String> map = new HashMap<>();
+                map.put("code", status.name());       // 'PENDING',  'APPROVED', 'REJECTED', ‘CANCELLED'
+                map.put("name", status.getKor());  // 승인대기, 승인완료, 반려, 취소
+                statusList.add(map);
+            }
+
+            // 권한 리스트
+            List<EgovMap> roleList = pgHomeMemberRoleService.getRoleList();
+
+            // 회원 데이터
+            EgovMap memberMap = pgHomeMemberService.getMemberById(memberId);
+
+            retMap.put("error", "N");
+            retMap.put("statusList", statusList);
+            retMap.put("roleList", roleList);
+            retMap.put("dataMap", memberMap);
+
+        } catch (DataAccessException | MultipartException | NullPointerException | IllegalArgumentException e) {
+            log.error("== ADMIN == PgHomeMemberAdminController:getMember.do error={}", e.getMessage());
+            throw e;
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(retMap);
+    }
+
+    /**
+     * 회원 관리 - 회원 정보 수정 (상태/권한 수정 포함)
+     * @param req
+     * @param res
+     * @param model
+     * @param param
+     * @return 회원 정보 수정 결과
+     * @throws Exception
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping("/setMemberUpdate.do")
+    public ResponseEntity<?> setMemberUpdate(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
+        HashMap<String, Object> retMap = new HashMap<>();
+
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(retMap);
+    }
 }

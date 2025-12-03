@@ -63,7 +63,7 @@
             m.updt_dt,
             m.del_dt,
             m.last_logined,
-            IFNULL(GROUP_CONCAT(DISTINCT r.name ORDER BY r.name SEPARATOR ','), '') AS role
+            IFNULL(GROUP_CONCAT(DISTINCT r.role_id ORDER BY r.role_id SEPARATOR ','), '') AS role
 
         FROM MEMBER m
                  LEFT JOIN MEMBER_ROLE mr ON mr.member_id = m.member_id
@@ -150,6 +150,11 @@
         SET last_logined = NOW()
         WHERE username = #{username, jdbcType=VARCHAR}
     </update>
+
+    <!-- 회원 수정 For Admin -->
+<!--    <update id="setMemberUpdate" parameterType="hashMap">-->
+<!--        UPDATE MEMBER m-->
+<!--    </update>-->
 
 
 

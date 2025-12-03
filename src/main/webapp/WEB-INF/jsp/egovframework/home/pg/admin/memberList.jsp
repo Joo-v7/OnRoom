@@ -117,6 +117,72 @@
         <div class="pagination"></div>
       </div>
 
+      <!-- 회원 관리 모달 -->
+      <div id="memberModal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+
+            <div class="modal-header bg-dark text-white">
+              <h5 id="modalTitle" class="modal-title">회원 관리</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+              <form id="modalForm" enctype="multipart/form-data">
+                <!-- memberId -->
+                <input id="memberId" name="memberId" type="hidden" value="">
+
+                <p class="small"><span class="text-danger mb-3">*</span> 는 필수 입력 사항입니다.</p>
+
+                <div class="mb-3">
+                  <label for="username" class="form-label fw-bold">아이디 <span class="text-danger mb-3">*</span></label>
+                  <input id="username" name="username" type="text" class="form-control" placeholder="아이디를 입력하세요" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="name" class="form-label fw-bold">이름 <span class="text-danger mb-3">*</span></label>
+                  <input id="name" name="name" type="text" class="form-control" placeholder="이름을 입력하세요" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="phone" class="form-label fw-bold">휴대전화 <span class="text-danger mb-3">*</span></label>
+                  <input id="phone" name="phone" class="form-control" placeholder="숫자만 입력하세요. ex) 01012345678" required></input>
+                </div>
+
+                <div class="mb-3">
+                  <label for="email" class="form-label fw-bold">이메일 <span class="text-danger mb-3">*</span></label>
+                  <input id="email" name="email" type="email" class="form-control" placeholder="이메일을 입력하세요." required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="birthdate" class="form-label fw-bold">생년월일 <span class="text-danger mb-3">*</span></label>
+                  <input id="birthdate" name="birthdate" type="date" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="status" class="form-label fw-bold">상태 <span class="text-danger mb-3">*</span></label>
+                  <select id="status" name="status" class="form-select" required>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="role" class="form-label fw-bold">권한 <span class="text-danger mb-3">*</span></label>
+                  <div id="role"></div>
+                </div>
+
+              </form>
+            </div>
+
+            <div class="modal-footer d-flex justify-content-center">
+              <button id="memberSaveBtn" type="button" class="btn btn-primary">저장</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
     </div>
   </div>
 
@@ -207,7 +273,7 @@ function dataList() {
 
         // 관리
         tableData += '<td class="text-center">' +
-                '<button type="button" class="saveBtn btn btn-dark" ' +
+                '<button type="button" class="managementBtn btn btn-success" ' +
                 'data-member-id="' + values.memberId + '">관리</button>' +
                 '</td>';
 
@@ -251,33 +317,42 @@ function event() {
   $('#searchQuery').on('input', function () {
     const filtered = $(this).val().replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9a-zA-Z\s]/g, '');
     $(this).val(filtered);
-  })
+  });
 
-  // 저장버튼 클릭(상태 변경)
-  <%--$('.dataList').on('click', '.saveBtn', function () {--%>
-  <%--  const $row = $(this).closest('tr'); // 현재 버튼이 있는 행 찾기--%>
-  <%--  const newStatus = $row.find('.reservation-status').val();  // 선택된 상태값--%>
-  <%--  const reservationId = $(this).attr('data-reservation-id');--%>
+  // 관리 버튼 클릭
+  $('.dataList').on('click', '.managementBtn', function () {
+    const memberId = $(this).data('memberId'); // .attr은 문자열로 읽는데, .data는 데이터 타입이 js내에서 유지됨
+    memberModal(memberId);
+  });
 
-  <%--  let $form = $('#searchForm');--%>
+  // 회원 저장 버튼 클릭
+  // 모달 내 회원 관리 폼에서 저장 버튼 클릭
+  $('#managementBtn').on('click', function () {
+    // === 제출 유효성 체크 ===
+    let formErr = false;
+    let moveFocus = '';
+    let errorMsg = '';
 
-  <%--  // 같은 hidden이 계속 쌓이지 않게 기존 값 제거--%>
-  <%--  $form.find('input[name="status"]').remove();--%>
-  <%--  $form.find('input[name="reservationId"]').remove();--%>
-  <%--  $form.find('input[name="action"]').remove();--%>
+    if (formErr) {
+      alert(errorMsg);
+      if (moveFocus) {
+        $('#' + moveFocus).focus();
+      }
+      return;
+    }
 
-  <%--  // hidden input 추가--%>
-  <%--  $form.append('<input type="hidden" name="status" value="' + newStatus + '">');--%>
-  <%--  $form.append('<input type="hidden" name="reservationId" value="' + reservationId + '">');--%>
-  <%--  $form.append('<input type="hidden" name="action" value="update">');--%>
+    // merge
+    ajaxForm('<c:url value="/admin/setMemberMerge.do"/>', $('#modalForm').serialize(), function (res) {
+      if ($.trim(res.error) === 'N') {
+        alert(res.successMsg);
 
-  <%--  ajaxForm('<c:out value="/admin/setUpdateReservationStatus.do" />', $form.serialize(), function(res) {--%>
-  <%--    if (res.error === 'N') {--%>
-  <%--      alert(res.successMsg);--%>
-  <%--      dataList();--%>
-  <%--    }--%>
-  <%--  });--%>
-  <%--});--%>
+        $('#memberModal').modal('hide');
+        dataList();
+      }
+    });
+
+
+  });
 
 }
 
@@ -295,17 +370,64 @@ function numberWithCommas(a) {
   return a.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
 
-// 날짜 + 시간(분:초)
-function formDateTime(dataString) {
-  const dateObj = new Date(dataString);
+// 회원 관리 모달
+// (memberId)
+function memberModal(memberId) {
+  // 폼/히든값 초기화
+  $('#modalForm')[0].reset();
+  $('#memberId').val('');
 
-  const year = dateObj.getFullYear();
-  const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-  const day = dateObj.getDate().toString().padStart(2, '0');
-  const hours = String(dateObj.getHours()).padStart(2, "0");
-  const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+  ajaxForm('<c:url value="/admin/getMember.do"/>', {memberId: memberId}, function (res) {
+    if (res.error === 'N') {
+      const statusList = res.statusList;
+      const roleList = res.roleList;
+      const data = res.dataMap;
 
-  return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes;
+      $('#memberId').val(data.memberId);
+      $('#username').val(data.username);
+      $('#name').val(data.name);
+      $('#phone').val(data.phone);
+      $('#email').val(data.email);
+      $('#birthdate').val(formatDate(data.birthdate));
+
+      // 회원 상태
+      let statusHtml = '';
+      statusList.forEach(function (s) {
+        const selected = (s.code === data.status) ? ' selected' : '';
+        statusHtml += '<option value="' + s.code + '"' + selected + '>' + s.name + '</option>';
+      });
+
+      $('#status').html(statusHtml);
+
+      // 회원 권한
+      let roleHtml = '';
+      roleList.forEach(function (r) {
+        const checked = (data.role.indexOf(r.roleId) !== -1) ? ' checked' : '';
+        roleHtml += '<div class="form-check form-check-inline">';
+        roleHtml += '<input class="form-check-input"' +
+                'type="checkbox" ' +
+                'id="' + r.name + '" ' +
+                'name="roleIds" ' +
+                'value="' + r.roleId + '"' + checked + '>';
+        roleHtml += '<label class="form-check-label" for="' + r.name + '">' +
+                r.description +
+                '</label>';
+        roleHtml += '</div>';
+      });
+
+      $('#role').html(roleHtml);
+
+      // 회원 role에 3(소셜 사용자)가 있으면 이름을 '소셜 사용자'로 세팅
+      if (data.role.indexOf(3) !== -1) {
+        $('#username').val('소셜 사용자');
+      }
+
+      let modalEl = document.getElementById('memberModal');
+      let modal = new bootstrap.Modal(modalEl);
+      modal.show();
+    }
+  });
+
 }
 
 </script>

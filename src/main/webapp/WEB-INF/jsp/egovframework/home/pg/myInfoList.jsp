@@ -69,7 +69,7 @@ function dataList() {
       let tableData = '';
       const dataMap = data.dataMap;
 
-      let username = (dataMap.role === 'ROLE_OAUTH') ? '소셜 로그인 이용자' : dataMap.username;
+      let username = (dataMap.role.indexOf('3') !== -1) ? '소셜 로그인 이용자' : dataMap.username;
 
       // 아이디
       tableData += '<tr>';
