@@ -87,7 +87,7 @@
                 비밀번호 변경
               </a>
 
-              <a href="#"
+              <a href="<c:url value='/myPage/leave.do'/>"
                  class="list-group-item list-group-item-action">
                 회원탈퇴
               </a>

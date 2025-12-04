@@ -286,7 +286,6 @@ public class PgHomeMemberController {
     @PreAuthorize("isAuthenticated()")
     @RequestMapping("/myPage/leave.do")
     public String leave(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
-        // TODO 마이페이지 - 계정 - 회원탈퇴 페이지
         return "home/pg/leave";
     }
 
@@ -301,10 +300,34 @@ public class PgHomeMemberController {
      */
     @PreAuthorize("isAuthenticated()")
     @RequestMapping("/myPage/setLeave.do")
-    public ResponseEntity<?> setLeave(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
+    public ResponseEntity<?> setLeave(
+            HttpServletRequest req,
+            HttpServletResponse res,
+            ModelMap model,
+            @RequestParam HashMap<String, Object> param,
+            Authentication authentication
+    ) throws Exception {
         HashMap<String, Object> retMap = new HashMap<>();
 
-        // TODO 마이페이지 - 계정 - 회원탈퇴 결과
+        try {
+            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+            Long memberId = principalDetails.getId();
+            param.put("memberId", memberId);
+
+            if (pgHomeMemberService.leave(param)) {
+                retMap.put("error", "N");
+                retMap.put("successTitle", "Success");
+                retMap.put("successMsg", "탈퇴 처리 되었습니다.");
+            } else {
+                retMap.put("error", "Y");
+                retMap.put("errorTitle", "회원 탈퇴");
+                retMap.put("errorMsg", "데이터 처리 중 오류가 발생했습니다.");
+            }
+
+        } catch (DataAccessException | MultipartException | NullPointerException | IllegalArgumentException | ArgumentNotValidException e) {
+            log.error("PgHomeMemberController:setLeave.do error={}", e.getMessage());
+            throw e;
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(retMap);
     }

@@ -252,4 +252,32 @@ public class PgHomeMemberServiceImpl extends EgovAbstractServiceImpl implements 
         return result;
 
     }
+
+    /**
+     * 회원 - 회원 탈퇴
+     * @param param
+     * @return 회원 탈퇴 결과 여부
+     * @throws Exception
+     */
+    @Override
+    public boolean leave(HashMap<String, Object> param) throws Exception {
+        boolean result = false;
+
+        Long memberId = (Long)param.get("memberId");
+        String password = StringUtils.stripToEmpty((String)param.get("checkPassword"));
+
+        EgovMap memberMap = pgHomeMemberMapper.getMemberById(memberId);
+
+        if (!passwordEncoder.matches(password, (String) memberMap.get("password"))) {
+            throw new ArgumentNotValidException("비밀번호가 올바르지 않습니다.");
+        }
+
+        // 회원 삭제 -> status == 'DELETED'
+        param.put("status", MemberStatus.DELETED.name());
+        if (pgHomeMemberMapper.setMemberUpdate(param) > 0) {
+            result = true;
+        }
+
+        return result;
+    }
 }
