@@ -65,7 +65,7 @@
                   type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#collapseAccount">
-            회원정보
+            계정
           </button>
         </h2>
 
@@ -135,7 +135,7 @@
                   type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#collapseBoard">
-            나의 게시글
+            게시글
           </button>
         </h2>
 

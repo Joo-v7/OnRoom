@@ -195,12 +195,19 @@ public class PgHomeMemberServiceImpl extends EgovAbstractServiceImpl implements 
     public boolean setMemberUpdate(HashMap<String, Object> param) throws Exception {
         boolean result = false;
 
-        // phone, email AES256 암호화
-        String encryptedPhone = AES256Util.encrypt((String)param.get("phone"));
-        String encryptedEmail = AES256Util.encrypt((String)param.get("email"));
+        String phone = StringUtils.stripToEmpty((String)param.get("phone"));
+        String email = StringUtils.stripToEmpty((String)param.get("email"));
 
-        param.put("phone", encryptedPhone);
-        param.put("email", encryptedEmail);
+        // phone, email AES256 암호화
+        if (!StringUtils.isEmpty(phone)) {
+            String encryptedPhone = AES256Util.encrypt(phone);
+            param.put("phone", encryptedPhone);
+        }
+
+        if (!StringUtils.isEmpty(email)) {
+            String encryptedEmail = AES256Util.encrypt(email);
+            param.put("email", encryptedEmail);
+        }
 
         if (pgHomeMemberMapper.setMemberUpdate(param) > 0) {
             result = true;

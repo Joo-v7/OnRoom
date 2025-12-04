@@ -331,7 +331,7 @@ function event() {
 
     let $form = $('#searchForm');
 
-    // 같은 Hidden 값이 계속 쌓이지 않게 기존 값 제거
+    // 같은 hidden 값이 계속 쌓이지 않게 기존 값 제거
     $form.find('input[name="useYn"]').remove();
     $form.find('input[name="roomId"]').remove();
     $form.find('input[name="action"]').remove();

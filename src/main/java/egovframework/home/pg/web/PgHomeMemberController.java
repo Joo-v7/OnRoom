@@ -155,6 +155,45 @@ public class PgHomeMemberController {
     }
 
     /**
+     * 마이페이지 - 회원 - 내 정보 수정 결과
+     * @param req
+     * @param res
+     * @param model
+     * @param param
+     * @return 내 정보 수정 결과
+     * @throws Exception
+     */
+    @PreAuthorize("isAuthenticated()")
+    @RequestMapping("/myPage/setMyInfoUpdate.do")
+    public ResponseEntity<?> setMyInfoUpdate(
+            HttpServletRequest req,
+            HttpServletResponse res,
+            ModelMap model,
+            @RequestParam HashMap<String, Object> param,
+            Authentication authentication
+    ) throws Exception {
+        HashMap<String, Object> retMap = new HashMap<>();
+
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        Long memberId = principalDetails.getId();
+
+        param.put("memberId", memberId);
+
+        if (pgHomeMemberService.setMemberUpdate(param)) {
+            retMap.put("error", "N");
+            retMap.put("successTitle", "Success");
+            retMap.put("successMsg", "수정되었습니다.");
+        } else {
+            retMap.put("error", "Y");
+            retMap.put("errorTitle", "회원 정보 수정");
+            retMap.put("errorMsg", "데이터 처리 중 오류가 발생했습니다.");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(retMap);
+    }
+
+
+    /**
      * 마이페이지 - 예약 - 내 예약 페이지
      * @param req
      * @param res

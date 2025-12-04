@@ -135,15 +135,22 @@
              NOW()
             )
         ON DUPLICATE KEY UPDATE
-            password = #{password, jdbcType=VARCHAR},
-            name = #{name, jdbcType=VARCHAR},
-            phone = #{phone, jdbcType=VARCHAR},
-            email = #{email, jdbcType=VARCHAR},
-            birthdate = #{birthdate, jdbcType=DATE},
+            <if test="name != null and name != ''">
+                name = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone, jdbcType=VARCHAR},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email, jdbcType=VARCHAR},
+            </if>
+            <if test="birthdate != null and birthdate != ''">
+                birthdate = #{birthdate, jdbcType=DATE},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status, jdbcType=VARCHAR},
+            </if>
             updt_dt = NOW()
-        <if test="status != null and status != ''">
-            status = #{status, jdbcType=VARCHAR}
-        </if>
     </insert>
 
     <!-- 회원의 status 조회 -->
