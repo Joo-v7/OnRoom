@@ -99,8 +99,8 @@
         SELECT COUNT(*)
         FROM ROOM
         <where>
-            <if test="useYn != null and useYn != ''">
-                AND use_yn = #{useYn, jdbcType=CHAR}
+            <if test="searchType != null and searchType != ''">
+                AND use_yn = #{searchType, jdbcType=CHAR}
             </if>
             <if test='searchQuery != null and searchQuery != ""'>
                 AND name LIKE CONCAT('%', #{searchQuery, jdbcType=VARCHAR}, '%')
@@ -131,7 +131,7 @@
              #{name, jdbcType=VARCHAR},
              #{description, jdbcType=VARCHAR},
              #{capacity, jdbcType=INTEGER},
-             <if test="imageName != null and imageUrl != ''">
+             <if test="imageName != null and imageName != ''">
                  #{imageName, jdbcType=VARCHAR},
              </if>
              <if test="imageUrl != null and imageUrl != ''">

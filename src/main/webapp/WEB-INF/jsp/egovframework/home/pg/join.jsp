@@ -56,6 +56,15 @@
             </dl>
 
             <dl class="row mb-3">
+              <dt class="col-sm-2 col-form-label">비밀번호 확인 <span class="text-danger">*</span></dt>
+              <dd class="col-sm-7">
+                <input id="passwordCheck" name="passwordCheck" type="password" class="form-control" placeholder="비밀번호를 다시 입력하세요." min="6" maxlength="20" required>
+                <div class="valid-feedback">위의 비밀번호와 일치합니다.</div>
+                <div class="invalid-feedback">위의 비밀번호와 일치하지 않습니다.</div>
+              </dd>
+            </dl>
+
+            <dl class="row mb-3">
               <dt class="col-sm-2 col-form-label">이름 <span class="text-danger">*</span></dt>
               <dd class="col-sm-7">
                 <input id="name" name="name" type="text" class="form-control" placeholder="한글, 영어만 입력 가능합니다." maxlength="20" required>
@@ -93,7 +102,8 @@
               <dt class="col-sm-2 col-form-label">약관동의 <span class="text-danger">*</span></dt>
               <dd class="col-sm-7 pt-2">
                 <input id="agreement" class="form-check-input" type="checkbox" required>
-                <label class="form-check-label" for="agreement">약관동의</label>
+                <label class="form-check-label" for="agreement">이용약관 동의 (필수)</label>
+                <a href="/terms" target="_blank" class="ms-2">약관보기</a>
               </dd>
             </dl>
 
@@ -154,6 +164,13 @@ function submitJoinForm() {
     formErr = true;
     moveFocus = 'password';
     errMsg = '비밀번호는 소문자, 숫자, 특수문자를 각각 1개 이상 사용하여, 6~20자 이내로 입력해주세요.';
+  }
+
+  // 비밀번호 일치 확인
+  if (!formErr && !isMatchedPassword($('#password').val(), $('#passwordCheck').val())) {
+    formErr = true;
+    moveFocus = 'newPasswordCheck';
+    errMsg = '신규 비밀번호와 확인 비밀번호가 일치하지 않습니다.';
   }
 
   // 이름
@@ -266,6 +283,33 @@ function bindEvents() {
     }
   });
 
+  // 비밀번호 유효성 (소문자, 숫자, 특수문자 허용 + 각 1개 이상)
+  $('.password').on('input', function() {
+    let val = $(this).val();
+
+    val = val.replace(/[^a-z0-9!@#$%^&*()\-=+{}\[\]:;'",.<>?\\/|~`]/gi, '').slice(0, 20);
+    $(this).val(val);
+
+    if (isValidPassword(val)) {
+      $(this).removeClass('is-invalid').addClass('is-valid');
+    } else {
+      $(this).removeClass('is-valid').addClass('is-invalid');
+    }
+  });
+
+  // 비밀번호 확인
+  $('#passwordCheck').on('input', function () {
+    let val = $(this).val();
+    let newPassword = $('#password').val();
+
+    if (isMatchedPassword(val, newPassword)) {
+      $(this).removeClass('is-invalid').addClass('is-valid');
+    } else {
+      $(this).removeClass('is-valid').addClass('is-invalid');
+    }
+
+  });
+
   // 이름 (한글, 영어만)
   $('#name').on('input', function() {
     const filtered = $(this).val().replace(/[^가-힣ㄱ-ㅎㅏ-ㅣA-Za-z]/g, '');
@@ -338,6 +382,14 @@ function isValidPassword(val) {
   val = $.trim(val);
   const regex = /^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()\-=+{}\[\]:;'",.<>?\\/|~`])[a-z0-9!@#$%^&*()\-=+{}\[\]:;'",.<>?\\/|~`]{6,20}$/;
   return regex.test(val);
+}
+
+
+// 비밀번호 일치여부 확인
+function isMatchedPassword(oldPassword, newPassword) {
+  oldPassword = $.trim(oldPassword);
+  newPassword = $.trim(newPassword);
+  return oldPassword === newPassword;
 }
 
 // 이름 (한글, 영어만)

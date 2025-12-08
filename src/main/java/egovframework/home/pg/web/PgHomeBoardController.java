@@ -103,6 +103,7 @@ public class PgHomeBoardController {
             listMap.put("page", movePage);
             listMap.put("pageCnt", pageCnt);
             listMap.put("totalCnt", totalCnt);
+            listMap.put("recordCnt", recordCnt);
 
             retMap.put("error", "N");
             retMap.put("dataMap", listMap);

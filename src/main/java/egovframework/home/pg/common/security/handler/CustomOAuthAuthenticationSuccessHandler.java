@@ -54,6 +54,9 @@ public class CustomOAuthAuthenticationSuccessHandler implements AuthenticationSu
         cookie.setPath("/");
         response.addCookie(cookie);
 
+        String loginMsg = "반갑습니다.";
+        request.getSession().setAttribute("errorMsg", loginMsg);
+
         // ROLE이 ADMIN이면 ADMIN 페이지로.
         boolean isAdmin = authentication.getAuthorities().stream().anyMatch(
                 authority -> authority.getAuthority().equals("ROLE_ADMIN")

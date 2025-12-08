@@ -42,6 +42,9 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
             }
         }
 
+        String logoutMsg = "로그아웃 되었습니다.";
+        request.getSession().setAttribute("errorMsg", logoutMsg);
+
         // default: 사용자 페이지
         String redirectUrl = request.getContextPath() + "/";
 

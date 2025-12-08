@@ -62,6 +62,12 @@
 		</init-param>
 
 		<load-on-startup>1</load-on-startup>
+
+		<multipart-config>
+			<max-file-size>5242880</max-file-size>         <!-- 5MB -->
+			<max-request-size>20971520</max-request-size>  <!-- 20MB -->
+			<file-size-threshold>0</file-size-threshold>
+		</multipart-config>
 	</servlet>
 
 	<!-- dispatcher servlet 에서 .do* 패턴은 다 처리 -->
@@ -77,12 +83,6 @@
 	<login-config>
 		<auth-method>BASIC</auth-method>
 	</login-config>
-
-	<multipart-config>
-		<max-file-size>5242880</max-file-size>         <!-- 5MB -->
-		<max-request-size>20971520</max-request-size>  <!-- 20MB -->
-		<file-size-threshold>0</file-size-threshold>
-	</multipart-config>
     
 <!--	<error-page>-->
 <!--		<exception-type>java.lang.Throwable</exception-type>-->

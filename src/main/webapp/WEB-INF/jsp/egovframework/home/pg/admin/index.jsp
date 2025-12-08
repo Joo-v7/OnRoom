@@ -15,7 +15,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta name="description" content="" />
   <meta name="author" content="" />
-  <title>OnRoom 관리자 홈 페이지</title>
+  <title>OnRoom 관리자 예약관리 페이지</title>
   <!-- Favicon-->
   <link rel="icon" href="<c:url value='/assets/favicon.ico'/>"/>
   <!-- Core theme CSS (includes Bootstrap)-->
@@ -47,7 +47,7 @@
     <!-- Top navigation-->
     <nav class="navbar navbar-expand-lg bg-light border-bottom">
 
-    <div class="container-fluid">
+      <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
@@ -58,18 +58,75 @@
       </div>
     </nav>
 
+    <!-- 에러 처리 -->
+    <c:if test="${not empty sessionScope.errorMsg}">
+      <script>
+        alert('${sessionScope.errorMsg}');
+      </script>
+      <c:remove var="errorMsg" scope="session"/>
+    </c:if>
+
 
     <!-- Page content-->
     <div class="container-fluid">
-      <h1 class="mt-4">Simple Sidebar</h1>
-      <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will change.</p>
-      <p>
-        Make sure to keep all page content within the
-        <code>#page-content-wrapper</code>
-        . The top navbar is optional, and just for demonstration. Just create an element with the
-        <code>#sidebarToggle</code>
-        ID which will toggle the menu when clicked.
-      </p>
+      <h1 class="mt-4">예약 관리</h1>
+
+      <!-- 상단 툴바: 좌측 메타, 우측 검색 -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <%-- 리스트 수 표시--%>
+        <span class="count text-muted small"></span>
+
+        <!-- 우측: 검색 폼 -->
+        <form id="searchForm" class="d-flex align-items-center gap-2">
+          <input type="hidden" id="movePage" name="movePage" value="<c:out value='${param.movePage}' default='1' />">
+
+          <select id="searchStatus" name="searchStatus" class="form-select w-auto">
+            <option value="" <c:if test="${param.searchStatus eq ''}">selected</c:if>>예약 상태 선택</option>
+            <c:forEach var="status" items="${statusList}">
+              <option value="${status.code}" ${param.searchStatus == status.code ? 'selected' : ''}>${status.name}</option>
+            </c:forEach>
+          </select>
+
+          <input id="searchQuery" name="searchQuery" type="text" class="form-control"  placeholder="회의명을 입력하세요" value="<c:out value="${param.searchQuery}" />">
+
+          <button id="searchBtn" type="button" class="btn btn-dark flex-shrink-0">검색</button>
+
+        </form>
+      </div>
+
+      <!-- 목록 -->
+      <div class="table-responsive">
+        <table  id="dataList" class="dataList table table-hover align-middle mb-0">
+          <thead class="table-active">
+          <tr>
+            <th class="text-center">연번</th>
+            <th class="text-center">종류</th>
+            <th class="text-center">시작일</th>
+            <th class="text-center">종료일</th>
+            <th class="text-center">시작시간</th>
+            <th class="text-center">종료시간</th>
+            <th class="text-center">회의실</th>
+            <th class="text-center">회의명</th>
+            <th class="text-center">안건</th>
+            <th class="text-center">참석자 수</th>
+            <th class="text-center">첨부파일</th>
+            <th class="text-center">작성자</th>
+            <th class="text-center">등록일</th>
+            <th class="text-center">상태</th>
+            <th class="text-center">관리</th>
+          </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 페이지네이션 -->
+      <div id="reservationPage" class="d-flex justify-content-center mt-5">
+        <div class="pagination"></div>
+      </div>
+
     </div>
   </div>
 
@@ -80,5 +137,187 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Core theme JS-->
 <script src="<c:url value='/js/scripts.js'/>"></script>
+
+<script>
+  //페이지 로드가 완료되면
+  if (window.addEventListener) window.addEventListener('load', reservationList, false);
+  else if (window.attachEvent) window.attachEvent('onload', reservationList);
+  else window.onload = reservationList;
+
+  function reservationList() {
+    dataList();
+
+    event();
+  }
+
+  function dataList() {
+    // 이전 목록 제거
+    // $('.dataList tbody').children('tr').remove('');
+    $('.dataList tbody').empty();
+    // 로딩 바
+    const constColLen = $('.dataList thead tr').children('th').length;
+
+    $('.dataList tbody').append('<tr class="loading"><td colspan="' + constColLen + '" class="text-center"><i class="fad fa-spinner-third fa-spin fa-5x"></i></td></tr>');
+
+    // form Submit [url, form, swal or toastr, validate, funcData]
+    ajaxForm('<c:url value="/admin/getReservationList.do"/>', $('#searchForm').serialize(), function(data) {
+      if ($.trim(data.error) == 'N') {
+        let tableData = '';
+        let trClass = '';
+        let page = Number(data.dataMap.page);
+        let pageCnt = Number(data.dataMap.pageCnt);
+        let recordCnt = Number(data.dataMap.recordCnt ?? data.dataMap.list?.length ?? 0);
+        let totalCnt = Number(data.dataMap.totalCnt);
+
+        if (!recordCnt) recordCnt = 0;
+        let startNo = totalCnt - ((page - 1) * recordCnt);
+
+        // 게시판 분류 맵
+        let statusMap = {};
+        (data.dataMap.statusList || []).forEach(function(rt){
+          statusMap[rt.code] = rt.name;
+        });
+
+        $.each(data.dataMap.list, function(key, values) {
+          tableData += '<tr' + trClass + '>';
+          // 연번
+          tableData += '<td class="text-center">' + (startNo - key) + '</td>';
+          // 종류
+          tableData += '<td class="text-center">' + (($.trim(values.type) === 'D') ? '일자' : '정기') + '</td>';
+          // 시작일
+          tableData += '<td class="text-center">' + formatDate(values.startDate) + '</td>';
+          // 종료일
+          const endBase = values.endDate ? values.endDate : values.startDate;
+          tableData += '<td class="text-center">' + (endBase ? formatDate(endBase) : '-') + '</td>';
+          // 시작시간
+          tableData += '<td class="text-center">' + (values.startAt ? values.startAt.substring(0, 5) : '') + '</td>';
+          // 종료시간
+          tableData += '<td class="text-center">' + (values.endAt ? values.endAt.substring(0, 5) : '') + '</td>';
+          // 회의실
+          tableData += '<td class="text-center">' + $.trim(values.roomName ?? '-') + '</td>';
+          // 회의명
+          tableData += '<td class="text-center">' + $.trim(values.name ?? '-') + '</td>';
+          // 안건
+          tableData += '<td class="text-center">' + $.trim(values.agenda ?? '-') + '</td>';
+          // 참석자 수
+          tableData += '<td class="text-center">' + (values.attendeeCount ?? '-') + '</td>';
+          // 첨부파일
+          let attachment = values.attachment
+          if (attachment) {
+            const displayName = attachment.split("_")[1] || attachment;
+            const url = '${pageContext.request.contextPath}' + '/reservation/attachment.do?file=' + attachment;
+            tableData += '<td class="text-center"><a href="' + url + '">' + displayName + '</a></td>';
+          } else {
+            tableData += '<td class="text-center">' + '-' + '</td>';
+          }
+          // 작성자
+          tableData += '<td class="text-center">' + $.trim(values.memberName ?? '-') + '</td>';
+          // 등록일
+          tableData += '<td class="text-center">' + formatDate(values.regDt) + '</td>';
+          // 예약상태
+          tableData += '<td class="text-center">';
+          tableData += '<select class="form-select bg-light reservation-status">';
+
+          (data.dataMap.statusList || []).forEach(function(rt) {
+            tableData += '<option value="' + rt.code + '"' +
+                    (rt.code === values.status ? ' selected' : '') +
+                    '>' + rt.name + '</option>';
+          });
+
+          tableData += '</select>';
+          tableData += '</td>';
+
+          // 관리
+          tableData += '<td class="text-center">' +
+                  '<button type="button" class="saveBtn btn btn-primary" ' +
+                  'data-reservation-id="' + values.reservationId + '">저장</button>' +
+                  '</td>';
+
+          tableData += '</tr>';
+        });
+
+        // data 0 이면 "데이터가 없습니다"
+        if (totalCnt === 0) {
+          tableData += '<tr><td colspan="' + constColLen + '" class="no-data text-center text-secondary">데이터가 없습니다.</td></tr>';
+          // 현재 페이지 / 전체 페이지
+          $('.count').html('총 <strong>' + numberWithCommas(totalCnt) + '건</strong> | 페이지 <strong>' + '0' + '/' + pageCnt + '</strong>');
+        } else {
+          $('.count').html('총 <strong>' + numberWithCommas(totalCnt) + '건</strong> | 페이지 <strong>' + page + '/' + pageCnt + '</strong>');
+        }
+        $('.dataList tbody').append(tableData);
+        // 페이징
+        customPagination('reservationPage', data.dataMap.page, data.dataMap.pageCnt);
+      }
+      // 로딩 제거
+      $('.dataList tbody').children('tr.loading').remove('');
+    });
+  }
+
+  function event() {
+    // 검색 버튼 클릭
+    $('#searchBtn').on('click', function () {
+      $('#searchForm').find('input[name="movePage"]').val('1');
+      dataList();
+    });
+
+    // 페이징 버튼 클릭
+    $('.pagination').on('click', 'li a', function (e) {
+      // # 붙는 기본동작 막기
+      e.preventDefault();
+      // #searchFormd 안의 movePage 값을 클릭된 페이지 번호로 바꿈
+      $('#searchForm').find('input[name="movePage"]').val($(this).data('move'));
+      dataList();
+    });
+
+    // 검색 입력: 한글/영어/숫자만 가능
+    $('#searchQuery').on('input', function () {
+      const filtered = $(this).val().replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9a-zA-Z\s]/g, '');
+      $(this).val(filtered);
+    })
+
+    // 저장버튼 클릭(상태 변경)
+    $('.dataList').on('click', '.saveBtn', function () {
+      const $row = $(this).closest('tr'); // 현재 버튼이 있는 행 찾기
+      const newStatus = $row.find('.reservation-status').val(); // 선택된 상태값
+      const reservationId = $(this).attr('data-reservation-id');
+
+      let $form = $('#searchForm');
+
+      // 같은 hidden이 계속 쌓이지 않게 기존 값 제거
+      $form.find('input[name="status"]').remove();
+      $form.find('input[name="reservationId"]').remove();
+      $form.find('input[name="action"]').remove();
+
+      // hidden input 추가
+      $form.append('<input type="hidden" name="status" value="' + newStatus + '">');
+      $form.append('<input type="hidden" name="reservationId" value="' + reservationId + '">');
+      $form.append('<input type="hidden" name="action" value="update">');
+
+      ajaxForm('<c:out value="/admin/setUpdateReservationStatus.do" />', $form.serialize(), function(res) {
+        if (res.error === 'N') {
+          alert(res.successMsg);
+          dataList();
+        }
+      });
+    });
+
+  }
+
+  // 날짜 형식 변환
+  function formatDate(dataString) {
+    const dateObj = new Date(dataString);
+    const year = dateObj.getFullYear();
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    const day = dateObj.getDate().toString().padStart(2, '0');
+
+    return year + '-' + month + '-' + day;
+  }
+
+  function numberWithCommas(a) {
+    return a.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  }
+
+</script>
+
 </body>
 </html>

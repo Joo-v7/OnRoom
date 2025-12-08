@@ -32,39 +32,9 @@
 
   <div class="list-group list-group-flush">
     <!-- 홈 -->
-    <a class="list-group-item list-group-item-action bg-dark text-white p-3
-       ${pageContext.request.requestURI.contains('/admin/index') ? 'active bg-primary text-white' : 'text-white bg-dark'}"
-       href="<c:out value='/admin/index.do'/>">홈</a>
-
-    <!-- ================= 회원 관리 (접히는 헤더) ================= -->
-    <a class="list-group-item list-group-item-action p-3 d-flex justify-content-between align-items-center
-       bg-dark text-white
-       ${pageContext.request.requestURI.contains('/admin/member') ? 'active bg-primary text-white' : ''}"
-       data-bs-toggle="collapse"
-       href="#memberSubMenu"
-       role="button"
-       aria-expanded="${pageContext.request.requestURI.contains('/admin/member') ? 'true' : 'false'}"
-       aria-controls="memberSubMenu">
-      <span>회원 관리</span>
-      <!-- 화살표 아이콘 (Bootstrap Icons 쓰면 됩니다. 없으면 그냥 ▾/▴ 로) -->
-      <span class="small">
-  <i class="bi bi-chevron-down"></i>
-</span>
-    </a>
-
-    <!-- 회원 관리 서브메뉴들 -->
-    <div class="collapse ${pageContext.request.requestURI.contains('/admin/member') ? 'show' : ''}"
-         id="memberSubMenu">
-      <a class="list-group-item list-group-item-action bg-dark text-white ps-5"
-         href="<c:out value='/admin/memberList.do'/>">
-        회원 관리
-      </a>
-
-      <a class="list-group-item list-group-item-action bg-dark text-white ps-5"
-         href="<c:out value='/admin/memberLoginBlockList.do'/>">
-        로그인 제한 관리
-      </a>
-    </div>
+<%--    <a class="list-group-item list-group-item-action bg-dark text-white p-3--%>
+<%--       ${pageContext.request.requestURI.contains('/admin/index') ? 'active bg-primary text-white' : 'text-white bg-dark'}"--%>
+<%--       href="<c:out value='/admin/index.do'/>">홈</a>--%>
 
     <!-- 예약 관리 -->
     <a class="list-group-item list-group-item-action bg-dark text-white p-3
@@ -75,6 +45,36 @@
     <a class="list-group-item list-group-item-action bg-dark text-white p-3
        ${pageContext.request.requestURI.contains('/admin/room') ? 'active bg-primary text-white' : 'text-white bg-dark'}"
        href="<c:out value='/admin/roomList.do'/>">회의실 관리</a>
+
+
+      <!-- ================= 회원 관리 (접히는 헤더) ================= -->
+      <a class="list-group-item list-group-item-action p-3 d-flex justify-content-between align-items-center
+       bg-dark text-white
+       ${pageContext.request.requestURI.contains('/admin/member') ? 'active bg-primary text-white' : ''}"
+         data-bs-toggle="collapse"
+         href="#memberSubMenu"
+         role="button"
+         aria-expanded="${pageContext.request.requestURI.contains('/admin/member') ? 'true' : 'false'}"
+         aria-controls="memberSubMenu">
+          <span>회원 관리</span>
+          <!-- 화살표 아이콘 (Bootstrap Icons 쓰면 됩니다. 없으면 그냥 ▾/▴ 로) -->
+          <span class="small"><i class="bi bi-chevron-down"></i></span>
+      </a>
+
+      <!-- 회원 관리 서브메뉴들 -->
+      <div class="collapse ${pageContext.request.requestURI.contains('/admin/member') ? 'show' : ''}"
+           id="memberSubMenu">
+          <a class="list-group-item list-group-item-action bg-dark text-white ps-5"
+             href="<c:out value='/admin/memberList.do'/>">
+              회원 관리
+          </a>
+
+          <a class="list-group-item list-group-item-action bg-dark text-white ps-5"
+             href="<c:out value='/admin/memberLoginBlockList.do'/>">
+              로그인 제한 관리
+          </a>
+      </div>
+
   </div>
 </div>
 

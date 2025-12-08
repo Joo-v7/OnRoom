@@ -263,7 +263,7 @@ function dataList() {
         let nextUseYn  = item.useYn === 'Y' ? 'N' : 'Y';
 
         tableData += '<td class="text-center">' +
-                '<button type="button" class="updateBtn btn btn-success" ' +
+                '<button type="button" class="updateBtn btn btn-success me-2" ' +
                 'data-room-id="' + item.roomId + '">수정</button>' +
                 '<button type="button" class="useYnBtn btn ' + (item.useYn === 'Y' ? 'btn-danger' : 'btn-primary') + '" ' +
                 'data-room-id="' + item.roomId + '" ' +

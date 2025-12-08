@@ -33,8 +33,8 @@
         FROM BOARD b
         JOIN MEMBER m ON b.member_id = m.member_id
         <where>
-            <if test='boardTypeId != null and boardTypeId != ""'>
-                AND b.board_type_id = #{boardTypeId, jdbcType=CHAR}
+            <if test='searchBoardType != null and searchBoardType != ""'>
+                AND b.board_type_id = #{searchBoardType, jdbcType=INTEGER}
             </if>
             <if test='searchQuery != null and searchQuery != ""'>
                 AND b.title LIKE CONCAT('%', #{searchQuery, jdbcType=VARCHAR}, '%')
