@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.home.pg.service.impl.PgHomeCommentMapper">
+
+    <!-- 게시글의 댓글 전체 조회 -->
+    <select id="getCommentList" parameterType="hashMap" resultType="egovMap">
+        SELECT
+            c.comment_id,
+            c.member_id,
+            c.board_id,
+            c.parent_id,
+            c.content,
+            c.depth,
+            c.priority,
+            c.visible_yn,
+            c.reg_dt,
+            m.name
+        FROM COMMENT c
+        JOIN MEMBER m ON m.member_id = c.member_id
+        WHERE c.board_id = #{boardId, jdbcType=INTEGER}
+        ORDER BY c.reg_dt ASC
+    </select>
+
+
+    <!-- 게시글 댓글 전체 개수 조회 -->
+    <select id="getCommentTotalCnt" parameterType="hashMap" resultType="Long">
+        SELECT COUNT(*)
+        FROM COMMENT
+        WHERE board_id = #{boardId, jdbcType=INTEGER}
+    </select>
+
+
+    <!-- 댓글 Merge -->
+    <insert id="setCommentMerge" parameterType="hashMap">
+        INSERT INTO COMMENT
+        (
+         <if test="commentId != null and commentId != ''">
+             comment_id,
+         </if>
+         member_id,
+         board_id,
+         <if test="parentId != null and parentId != ''">
+             parent_id,
+         </if>
+         content,
+         <if test="depth != null and depth != ''">
+             depth,
+         </if>
+         <if test="priority != null and priority != ''">
+             priority,
+         </if>
+         reg_dt
+        )
+        VALUES
+            (
+             <if test="commentId != null and commentId != ''">
+                 #{commentId, jdbcType=INTEGER},
+             </if>
+             #{memberId, jdbcType=INTEGER},
+             #{boardId, jdbcType=INTEGER},
+             <if test="parentId != null and parentId != ''">
+                 #{parentId, jdbcType=INTEGER},
+             </if>
+             #{content, jdbcType=VARCHAR},
+             <if test="depth != null and depth != ''">
+                 #{depth, jdbcType=INTEGER},
+             </if>
+             <if test="priority != null and priority != ''">
+                 #{priority, jdbcType=INTEGER},
+             </if>
+             NOW()
+        )
+        ON DUPLICATE KEY UPDATE
+            <if test="content != null and content != ''">
+                content = #{content, jdbcType=VARCHAR},
+            </if>
+            <if test="visibleYn != null and visibleYn != ''">
+                visible_yn = #{visibleYn, jdbcType=CHAR},
+            </if>
+            updt_dt = NOW()
+    </insert>
+
+    <!-- 댓글 공개 여부 수정 -->
+    <update id="setCommentVisibleUpdate" parameterType="hashMap">
+        UPDATE COMMENT
+        SET visible_yn = #{visibleYn, jdbcType=CHAR},
+            <if test="visibleYn == 'N'">
+                del_dt = NOW()
+            </if>
+            <if test="visibleYn == 'Y'">
+                updt_dt = NOW(),
+                del_dt = null
+            </if>
+        WHERE comment_id = #{commentId, jdbcType=INTEGER}
+    </update>
+
+</mapper>

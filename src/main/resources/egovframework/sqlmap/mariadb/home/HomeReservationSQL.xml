@@ -265,12 +265,4 @@
         LIMIT #{limitStart, jdbcType=INTEGER}, #{recordCnt, jdbcType=INTEGER}
     </select>
 
-
-
-
-
-
-
-
-
 </mapper>

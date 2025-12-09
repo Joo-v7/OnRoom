@@ -165,7 +165,7 @@
                     // 관리
                     if ($.trim(reservation.status) === 'PENDING') {
                         tableData += '<td class="text-center">' +
-                            '<button type="button" class="updateBtn btn btn-sm btn-primary" data-reservation-id="' + reservation.reservationId + '">수정</button>' +
+                            '<button type="button" class="updateBtn btn btn-sm btn-primary me-2" data-reservation-id="' + reservation.reservationId + '">수정</button>' +
                             '<button type="button" class="cancelBtn btn btn-sm btn-danger" data-reservation-id="' + reservation.reservationId + '">취소</button>' +
                             '</td>';
                     } else {

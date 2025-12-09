@@ -40,7 +40,7 @@
                 AND b.title LIKE CONCAT('%', #{searchQuery, jdbcType=VARCHAR}, '%')
             </if>
         </where>
-        ORDER BY b.reg_dt DESC, b.title ASC
+        ORDER BY b.board_type_id ASC, b.reg_dt DESC, b.title ASC
         LIMIT #{limitStart, jdbcType=INTEGER}, #{recordCnt, jdbcType=INTEGER}
     </select>
 
@@ -57,9 +57,11 @@
         b.reg_dt,
         b.updt_dt,
         b.del_dt,
-        m.name
+        m.name,
+        bt.name AS board_type_name
         FROM BOARD b
         JOIN MEMBER m ON b.member_id = m.member_id
+        JOIN BOARD_TYPE bt ON b.board_type_id = bt.board_type_id
         WHERE board_id = #{boardId, jdbcType=INTEGER}
     </select>
 
@@ -67,6 +69,9 @@
     <insert id="setBoardMerge" parameterType="hashMap">
         INSERT INTO BOARD
         (
+         <if test="boardId != null and boardId != ''">
+             board_id,
+         </if>
          member_id,
          board_type_id,
          title,
@@ -75,6 +80,9 @@
         )
         VALUES
             (
+             <if test="boardId != null and boardId != ''">
+                 #{boardId, jdbcType=INTEGER},
+             </if>
              #{memberId, jdbcType=INTEGER},
              #{boardTypeId, jdbcType=INTEGER},
              #{title, jdbcType=VARCHAR},
@@ -82,14 +90,19 @@
              NOW()
             )
         ON DUPLICATE KEY UPDATE
-            board_type_id = #{boardTypeId, jdbcType=INTEGER},
-            title = #{title, jdbcType=VARCHAR},
-            content = #{content, jdbcType=VARCHAR},
+            <if test="boardTypeId != null and boardTypeId != ''">
+                board_type_id = #{boardTypeId, jdbcType=INTEGER},
+            </if>
+            <if test="title != null and title != ''">
+                title = #{title, jdbcType=VARCHAR},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content, jdbcType=VARCHAR},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status, jdbcType=VARCHAR},
+            </if>
             updt_dt = NOW()
-        <if test="status != null and status != ''">
-            , status = #{status, jdbcType=VARCHAR}
-        </if>
-
     </insert>
 
     <!-- 게시판 - 삭제 -->
