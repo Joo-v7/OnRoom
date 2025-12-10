@@ -108,7 +108,9 @@
             start_at = #{startAt, jdbcType=TIMESTAMP},
             end_at = #{endAt, jdbcType=TIMESTAMP},
             days_of_week = #{daysOfWeek, jdbcType=VARCHAR},
-            attachment = #{attachment, jdbcType=VARCHAR},
+            <if test="attachment != null and attachment != ''">
+                attachment = #{attachment, jdbcType=VARCHAR},
+            </if>
             updt_dt = NOW()
         <if test="status != null and status != ''">
             , status = #{status, jdbcType=VARCHAR}

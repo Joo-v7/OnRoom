@@ -9,12 +9,13 @@
 
 <%@ include file="/WEB-INF/jsp/egovframework/home/pg/common/header.jsp" %>
 
-<%--<style>--%>
-<%--  /* 이 페이지에서만 dd 하단 마진 제거 */--%>
-<%--  dd {--%>
-<%--    margin-bottom: 0 !important;--%>
-<%--  }--%>
-<%--</style>--%>
+<form id="searchForm" name="searchForm" method="post">
+  <input type="hidden" id="movePage" name="movePage" value="<c:out value="${param.movePage}" />">
+  <input type="hidden" id="searchBoardType" name="searchBoardType" value="<c:out value="${param.searchBoardType}" />">
+  <input type="hidden" id="searchQuery" name="searchQuery" value="<c:out value="${param.searchQuery}" />">
+  <input type="hidden" id="roomId" name="roomId" value="<c:out value="${param.roomId}" />">
+
+</form>
 
 <!-- Page content-->
 <div class="container-xl">
@@ -33,8 +34,9 @@
         <div class="col-12 col-md-10 col-lg-10">
 
           <form id="reservationForm" method="post" enctype="multipart/form-data">
-            <%-- 등록일떄는 쿼리스트링에 roomId / 수정일때는 model의 reservation에 roomId --%>
+            <%-- action이 업데이트인지 확인 - isUpdate 변수 선언 --%>
             <c:set var="isUpdate" value="${param.action eq 'update'}" />
+            <%-- 등록일떄는 쿼리스트링에 roomId / 수정일때는 model의 reservation에 roomId --%>
             <c:set var="selectedRoomId" value="${not empty param.roomId ? param.roomId : reservationData.roomId}" />
 
             <c:if test="${isUpdate}">
@@ -169,6 +171,7 @@
               </dd>
               <dd class="col-sm-3">
                 <!-- min:06 / max:22 input type이 time이면 선택은 가능하지만 제출시 유효성 검사에서 걸러줌 -->
+                <%-- fn: -> JSTL 태그 라이브러리의 functions 네임스페이스임. substring() 사용하기 위함. --%>
                 <input id="endAt" name="endAt" type="time" class="form-control" min="06:00" max="22:00" required
                        value="${isUpdate ? fn:substring(reservationData.endAt, 0, 5) : ''}">
               </dd>
@@ -180,8 +183,11 @@
             <dl class="row mb-3">
               <dt class="col-sm-2 col-form-label">첨부파일</dt>
               <dd class="col-sm-6">
-                <!-- TODO 첨부파일: 왜 파일을 보내줘도 안 들어가는가?? -->
-                <input id="attachment" name="attachment" class="form-control" type="file">
+                <input id="attachment" name="attachment" class="form-control" type="file" value="">
+              </dd>
+              <dd class="offset-sm-2 col-sm-10">
+                <div id="existingAttachment"></div>
+                <small class="text-muted">* 첨부파일은 1개만 등록할 수 있습니다.</small>
               </dd>
             </dl>
 
@@ -215,7 +221,6 @@ function reservation() {
 
   // 취소
   $('#reservationList').on('click', function () {
-    console.log('취소 버튼 클릭');
     reservationList();
 
   });
@@ -233,28 +238,21 @@ function reservation() {
   // 회의실 선택되어 있으면 참석인원 업데이트
   updateAttendeeCapacity();
 
-  if (${isUpdate}) {
-    const type = "${reservationData.type}";
-    if (type === "R") { // 정기
-      $('#dateTypeRegular').prop('checked', true);
-      $('#weekdaySection').show();
-      $('#endDate').prop('disabled', false);
-    } else { // 일자
-      $('#dateTypeOnce').prop('checked', true);
-      $('#weekdaySection').hide();
-      $('#endDate').prop('disabled', true).val('');
-    }
-  }
-
 }
 
 // 예약 목록으로 이동
 function reservationList() {
-  if (window.history.length > 1) {
-    history.back(); // 바로 이전 페이지로 (캘린더 상태 그대로)
+  const previousUrl = document.referrer;
+  let $form = $('#searchForm');
+
+  if (previousUrl.includes('myReservationList.do')) {
+    $form.attr('action', '/myPage/myReservationList.do');
   } else {
-    window.location.href = "/reservationList.do";
+    $form.attr('action', '/reservationList.do');
   }
+
+  $form.submit();
+
 }
 
 
@@ -370,12 +368,7 @@ function submitReservationForm() {
     // 응답 성공 시
     if (res.error === 'N') {
       alert(res.successMsg);
-
-      if (window.history.length > 1) {
-        history.back(); // 바로 이전 페이지로 (캘린더 상태 그대로)
-      } else {
-        window.location.href = "/reservationList.do";
-      }
+      reservationList();
     }
 
   });
@@ -422,6 +415,39 @@ function bindEvents() {
   let today = new Date().toISOString().split("T")[0];
   console.log(today);
   $('#startDate, #endDate').attr('min', today);
+
+  // ========== JS에서 EL 사용한 부분 시작 =============
+  // 수정일때 일자/정기 checked 처리
+  if (${isUpdate}) {
+    const type = "${reservationData.type}";
+    if (type === "R") { // 정기
+      $('#dateTypeRegular').prop('checked', true);
+      $('#weekdaySection').show();
+      $('#endDate').prop('disabled', false);
+    } else { // 일자
+      $('#dateTypeOnce').prop('checked', true);
+      $('#weekdaySection').hide();
+      $('#endDate').prop('disabled', true).val('');
+    }
+  }
+
+  // 수정일때 첨부파일 표시
+  if (${isUpdate}) {
+    // 첨부파일이 있으면
+    let $attachment = "${reservationData.attachment}";
+    if ($attachment) {
+      const displayName = $attachment.split("_")[1] || $attachment;
+      const url = '${pageContext.request.contextPath}' + '/reservation/attachment.do?file=' + $attachment;
+
+      $('#existingAttachment').html(
+              '<span class="text-muted small me-1">* 기존파일: </span>' +
+              '<a href="' + url + '">' + displayName + '</a><br>'
+      );
+    }
+
+  }
+
+  // ============ JS에서 EL 사용한 부분 끝 =============
 
 }
 

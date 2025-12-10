@@ -502,7 +502,8 @@ function roomModal(action, roomId) {
           // append() X -> html()로 전체 덮어쓰기
           $('#currentImage').html(
                   '<span class="text-muted small me-1">* 기존 이미지:</span>' +
-                  '<a href="' + url + '">' + data.imageName + '<a></td>'
+                  '<a href="' + url + '">' + data.imageName + '<a></td>' +
+                  '<br><span class="text-muted small me-1">* 이미지는 1개만 등록할 수 있습니다.</span>'
           )
         }
 
