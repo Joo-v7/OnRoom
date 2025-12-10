@@ -19,7 +19,7 @@
       <div class="col-lg-2 mt-5">
           <jsp:include page="/WEB-INF/jsp/egovframework/home/pg/common/sidebar.jsp">
               <jsp:param name="sideType" value="myPage"/>
-              <jsp:param name="active" value="reservation"/>
+              <jsp:param name="active" value="board"/>
           </jsp:include>
       </div>
 
@@ -33,21 +33,23 @@
           <span class="count text-muted small"></span>
 
             <!-- 우측: 검색 폼 -->
-          <form id="searchForm" class="d-flex align-items-center gap-2">
-            <input type="hidden" id="movePage" name="movePage" value="<c:out value='${param.movePage}' default='1' />">
+              <form id="searchForm" class="d-flex align-items-center gap-2">
+                  <input type="hidden" id="movePage" name="movePage" value="<c:out value='${param.movePage}' default='1' />">
 
-            <select id="searchBoardType" name="searchBoardType" class="form-select w-auto">
-              <option value="" <c:if test="${param.searchBoardType eq ''}">selected</c:if>>게시글 분류 선택</option>
-              <c:forEach var="searchBoardType" items="${boardTypeList}">
-                <option value="${searchBoardType.boardTypeId}" ${param.searchBoardType == searchBoardType.boardTypeId ? 'selected' : ''}>${searchBoardType.name}</option>
-              </c:forEach>
-            </select>
+                  <select id="searchBoardType" name="searchBoardType" class="form-select w-auto">
+                      <option value="" <c:if test="${param.searchBoardType eq ''}">selected</c:if>>게시글 분류 선택</option>
+                      <c:forEach var="searchBoardType" items="${boardTypeList}">
+                          <c:if test="${isAdmin or searchBoardType.boardTypeId ne 1}">
+                              <option value="${searchBoardType.boardTypeId}" ${param.searchBoardType == searchBoardType.boardTypeId ? 'selected' : ''}>${searchBoardType.name}</option>
+                          </c:if>
+                      </c:forEach>
+                  </select>
 
-            <input id="searchQuery" name="searchQuery" type="text" class="form-control"  placeholder="검색어를 입력하세요" value="<c:out value="${param.searchQuery}" />">
+                  <input id="searchQuery" name="searchQuery" type="text" class="form-control"  placeholder="게시글 제목을 입력하세요" value="<c:out value="${param.searchQuery}" />">
 
-            <button id="searchBtn" type="button" class="btn btn-dark flex-shrink-0">검색</button>
+                  <button id="searchBtn" type="button" class="btn btn-dark flex-shrink-0">검색</button>
 
-          </form>
+              </form>
         </div>
 
       <!-- 목록 -->
@@ -108,7 +110,7 @@ function dataList() {
 
   $('.dataList tbody').append('<tr class="loading"><td colspan="' + constColLen + '" class="text-center"><i class="fad fa-spinner-third fa-spin fa-5x"></i></td></tr>');
   // form Submit [url, form, swal or toastr, validate, funcData]
-  ajaxForm('<c:url value="/getBoardList.do"/>', $('#searchForm').serialize(), function(data) {
+  ajaxForm('<c:url value="/myPage/getMyBoardList.do"/>', $('#searchForm').serialize(), function(data) {
     if ($.trim(data.error) == 'N') {
       var tableData = '';
       var trClass = '';
@@ -134,7 +136,7 @@ function dataList() {
         tableData += '<td class="text-center">' + $.trim(boardTypeMap[values.boardTypeId] ?? '') + '</td>';
         // 제목
         tableData += '<td class="text-center" style="text-align:left;">'
-            + '<a href="#" class="boardView" data-id="' + $.trim(values.boardId) + '">'
+            + '<a href="#" class="boardView text-dark" data-id="' + $.trim(values.boardId) + '">'
             + $.trim(values.title ?? '') + '</a></td>';
         // 작성자
         tableData += '<td class="text-center">' + $.trim(values.name ?? '-') + '</td>';

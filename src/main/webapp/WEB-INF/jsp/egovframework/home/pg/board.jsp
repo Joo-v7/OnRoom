@@ -108,8 +108,15 @@ function board() {
 
 // 게시판 목록으로 이동
 function boardList() {
+  const previousUrl = document.referrer;
   let $form = $('#searchForm');
-  $form.attr('action', "/boardList.do");
+
+  if (previousUrl.includes('myBoardList.do')) {
+    $form.attr('action', '/myPage/myBoardList.do');
+  } else {
+    $form.attr('action', "/boardList.do");
+  }
+
   $form.submit();
 }
 
@@ -164,8 +171,7 @@ function submitBoardForm() {
     // 응답 성공 시
     if (res.error === 'N') {
       alert(res.successMsg);
-      $searchForm.attr('action', "/boardList.do");
-      $searchForm.submit(); // 리스트 페이지로 이동
+      boardList();
     }
     // alert 2번 호출되는 이유: ajaxForm 에서 error 발생 시 내부에서 alert 띄움.
     // else {

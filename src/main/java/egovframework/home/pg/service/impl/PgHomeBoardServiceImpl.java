@@ -37,6 +37,7 @@ public class PgHomeBoardServiceImpl extends EgovAbstractServiceImpl implements P
         return pgHomeBoardMapper.getBoard(param);
     }
 
+    @Transactional
     @Override
     public boolean setBoardMerge(HashMap<String, Object> param) throws DataAccessException {
         boolean result = false;
@@ -59,8 +60,14 @@ public class PgHomeBoardServiceImpl extends EgovAbstractServiceImpl implements P
         return result;
     }
 
+    @Transactional
     @Override
     public int increaseViewCount(HashMap<String, Object> param) throws DataAccessException {
         return pgHomeBoardMapper.increaseViewCount(param);
+    }
+
+    @Override
+    public List<EgovMap> getBoardListForMember(HashMap<String, Object> param) throws DataAccessException {
+        return pgHomeBoardMapper.getBoardListForMember(param);
     }
 }

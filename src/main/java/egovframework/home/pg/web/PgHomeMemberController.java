@@ -4,6 +4,8 @@ import egovframework.home.pg.common.code.ReservationStatus;
 import egovframework.home.pg.common.security.user.PrincipalDetails;
 import egovframework.home.pg.exception.AccessDeniedException;
 import egovframework.home.pg.exception.ArgumentNotValidException;
+import egovframework.home.pg.service.PgHomeBoardService;
+import egovframework.home.pg.service.PgHomeBoardTypeService;
 import egovframework.home.pg.service.PgHomeMemberService;
 import egovframework.home.pg.service.PgHomeReservationService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,8 @@ public class PgHomeMemberController {
 
     private final PgHomeMemberService pgHomeMemberService;
     private final PgHomeReservationService pgHomeReservationService;
+    private final PgHomeBoardTypeService pgHomeBoardTypeService;
+    private final PgHomeBoardService pgHomeBoardService;
 
     /**
      * 회원 - 회원가입 페이지
@@ -431,6 +435,7 @@ public class PgHomeMemberController {
             listMap.put("page", movePage);
             listMap.put("pageCnt", pageCnt);
             listMap.put("totalCnt", totalCnt);
+            listMap.put("recordCnt", recordCnt);
 
             retMap.put("error", "N");
             retMap.put("dataMap", listMap);
@@ -443,7 +448,7 @@ public class PgHomeMemberController {
     }
 
     /**
-     * 마이페이지 - 나의 게시글 - 내 게시글 페이지
+     * 마이페이지 - 게시글 - 내 게시글 페이지
      * @param req
      * @param res
      * @param model
@@ -453,8 +458,91 @@ public class PgHomeMemberController {
      */
     @PreAuthorize("isAuthenticated()")
     @RequestMapping("/myPage/myBoardList.do")
-    public String myBoardList(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
+    public String myBoardList(
+            HttpServletRequest req,
+            HttpServletResponse res,
+            ModelMap model,
+            @RequestParam HashMap<String, Object> param,
+            Authentication authentication
+    ) throws Exception {
+
+        // 관리자 체크
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        boolean isAdmin = principal.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        model.addAttribute("isAdmin", isAdmin);
+
+        // 게시판 타입 리스트
+        List<EgovMap> boardTypeList = pgHomeBoardTypeService.getBoardTypeList();
+        model.addAttribute("boardTypeList", boardTypeList);
+
         return "home/pg/myBoardList";
+    }
+
+    // 마이페이지 - 게시글 - 내 게시글 데이터
+    @PreAuthorize("isAuthenticated()")
+    @RequestMapping("/myPage/getMyBoardList.do")
+    public ResponseEntity<?> getMyBoardList(
+            HttpServletRequest req,
+            HttpServletResponse res,
+            ModelMap model,
+            @RequestParam HashMap<String, Object> param,
+            Authentication authentication
+    ) throws Exception {
+        HashMap<String, Object> retMap = new HashMap<>();
+        HashMap<String, Object> listMap = new HashMap<>();
+
+        try {
+            // 회원 PK 세팅
+            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+            param.put("memberId", principalDetails.getId());
+
+            // 페이지 번호
+            Object movePageObject = param.get("movePage");
+            int movePage = ObjectUtils.isEmpty(movePageObject) ? 1 : NumberUtils.toInt(movePageObject.toString());
+            param.put("movePage", movePage);
+
+            // 한페이지 레코드 개수
+            double recordCnt = NumberUtils.toDouble((String) param.get("recordCnt"),10);
+            if (StringUtils.isNotEmpty((String) param.get("recordCnt"))) recordCnt = NumberUtils.toDouble((String) param.get("recordCnt"));
+            param.put("recordCnt", (int)recordCnt);
+
+            // limit 시작 개수 (Mariadb, mySql)
+            param.put("limitStart", ((movePage - 1) * (int)recordCnt));
+
+            // 전체 개수
+            double totalCnt = pgHomeBoardService.getBoardTotalCnt(param);
+
+            // 전체 페이지수
+            double pageCnt = Math.ceil(totalCnt / recordCnt);
+            int totalPage = (int)(pageCnt > 0 ? pageCnt : 1);
+
+            // 페이지 유효성 체크
+            if (movePage > totalPage) {
+                movePage = 1;
+                param.put("movePage", movePage);
+                param.put("limitStart", (movePage - 1) * (int)recordCnt);
+            }
+
+            List<EgovMap> memberBoardList = pgHomeBoardService.getBoardListForMember(param);
+            List<EgovMap> boardTypeList = pgHomeBoardTypeService.getBoardTypeList();
+            model.addAttribute("boardTypeList", boardTypeList);
+
+            listMap.put("list", memberBoardList);
+            listMap.put("boardTypeList", boardTypeList);
+            listMap.put("page", movePage);
+            listMap.put("pageCnt", pageCnt);
+            listMap.put("totalCnt", totalCnt);
+            listMap.put("recordCnt", recordCnt);
+
+            retMap.put("error", "N");
+            retMap.put("dataMap", listMap);
+
+        } catch (DataAccessException | MultipartException | NullPointerException | IllegalArgumentException e) {
+            log.error("== ADMIN == PgHomeReservationAdminController:getMyBoardList.do error={}", e.getMessage());
+            throw e;
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(retMap);
     }
 
 

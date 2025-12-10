@@ -7,8 +7,12 @@
         SELECT COUNT(*)
         FROM BOARD
         <where>
-            <if test='boardTypeId != null and boardTypeId != ""'>
-                AND board_type_id = #{boardTypeId, jdbcType=CHAR}
+            status = 'ACTIVE'
+            <if test='memberId != null and memberId != ""'>
+                AND member_id = #{memberId, jdbcType=INTEGER}
+            </if>
+            <if test='searchBoardType != null and searchBoardType != ""'>
+                AND board_type_id = #{searchBoardType, jdbcType=CHAR}
             </if>
             <if test='searchQuery != null and searchQuery != ""'>
                 AND title LIKE CONCAT('%', #{searchQuery, jdbcType=VARCHAR}, '%')
@@ -64,6 +68,36 @@
         JOIN MEMBER m ON b.member_id = m.member_id
         JOIN BOARD_TYPE bt ON b.board_type_id = bt.board_type_id
         WHERE board_id = #{boardId, jdbcType=INTEGER}
+    </select>
+
+    <!-- 마이페이지 - 내 게시글 데이터 -->
+    <select id="getBoardListForMember" parameterType="hashMap" resultType="egovMap">
+        SELECT
+        b.board_id,
+        b.member_id,
+        b.board_type_id,
+        b.title,
+        b.content,
+        b.view_count,
+        b.status,
+        b.reg_dt,
+        b.updt_dt,
+        b.del_dt,
+        m.name
+        FROM BOARD b
+        JOIN MEMBER m ON b.member_id = m.member_id
+        <where>
+            b.member_id = #{memberId, jdbcType=INTEGER}
+            AND b.status = 'ACTIVE'
+            <if test='searchBoardType != null and searchBoardType != ""'>
+                AND b.board_type_id = #{searchBoardType, jdbcType=INTEGER}
+            </if>
+            <if test='searchQuery != null and searchQuery != ""'>
+                AND b.title LIKE CONCAT('%', #{searchQuery, jdbcType=VARCHAR}, '%')
+            </if>
+        </where>
+        ORDER BY b.board_type_id ASC, b.reg_dt DESC, b.title ASC
+        LIMIT #{limitStart, jdbcType=INTEGER}, #{recordCnt, jdbcType=INTEGER}
     </select>
 
     <!-- 게시판 - Merge -->
@@ -123,5 +157,7 @@
         SET view_count = view_count + 1
         WHERE board_id = #{boardId, jdbcType=INTEGER}
     </update>
+
+
 
 </mapper>

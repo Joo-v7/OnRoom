@@ -304,8 +304,15 @@
 
   // 게시판 목록으로 이동
   function boardList() {
+    const previousUrl = document.referrer;
     let $form = $('#searchForm');
-    $form.attr('action', "/boardList.do");
+
+    if (previousUrl.includes('myBoardList.do')) {
+      $form.attr('action', '/myPage/myBoardList.do');
+    } else {
+      $form.attr('action', "/boardList.do");
+    }
+
     $form.submit();
   }
 

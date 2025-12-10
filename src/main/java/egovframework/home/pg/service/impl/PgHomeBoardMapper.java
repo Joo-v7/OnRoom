@@ -39,4 +39,10 @@ public interface PgHomeBoardMapper {
      * 게시판 - 조회수 + 1
      */
     int increaseViewCount(HashMap<String, Object> param) throws DataAccessException;
+
+    /**
+     * 마이페이지 - 내 게시글들 조회
+     */
+    List<EgovMap> getBoardListForMember(HashMap<String, Object> param) throws DataAccessException;
+
 }
