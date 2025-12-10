@@ -15,14 +15,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,6 +36,7 @@ public class PgHomeBoardController {
 
     private final PgHomeBoardService pgHomeBoardService;
     private final PgHomeBoardTypeService pgHomeBoardTypeService;
+    private final PgHomeMemberService pgHomeMemberService;
 
     /**
      * 게시판 - 리스트 화면
@@ -128,15 +132,30 @@ public class PgHomeBoardController {
      */
     @RequestMapping("/boardView.do")
     public String boardView(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
+        // SecurityContext 에서 직접 Authentication 꺼내기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // 회원이 로그인 했다면, memberId 같이 전송
+        // 로그인 하지 않은 사용자도 Authentication이 anonymousUser로 들어와서 타입 캐스팅 에러 터져서 이렇게 함.
+        // if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication != null && authentication.getPrincipal() instanceof PrincipalDetails) {
+
+            PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+            model.addAttribute("currentMemberId", principal.getId());
+        }
+
+        // 뷰 카운트 + 1
         pgHomeBoardService.increaseViewCount(param);
+        // 게시글 데이터
         EgovMap board = pgHomeBoardService.getBoard(param);
+
         model.addAttribute("board", board);
 
         return "home/pg/boardView";
     }
 
     /**
-     * 게시판 - 등록 페이지
+     * 게시판 - 등록/수정 페이지
      * @param req
      * @param res
      * @param model
@@ -146,9 +165,30 @@ public class PgHomeBoardController {
      */
     @PreAuthorize("isAuthenticated()")
     @RequestMapping("/board.do")
-    public String boardForm(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
+    public String boardForm(
+            HttpServletRequest req,
+            HttpServletResponse res,
+            ModelMap model,
+            @RequestParam HashMap<String, Object> param,
+            Authentication authentication
+    ) throws Exception {
+
+        // 관리자 체크
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        boolean isAdmin = principal.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        model.addAttribute("isAdmin", isAdmin);
+
+        // 게시판 타입 리스트
         List<EgovMap> boardTypeList = pgHomeBoardTypeService.getBoardTypeList();
         model.addAttribute("boardTypeList", boardTypeList);
+
+        String action = StringUtils.stripToEmpty((String) param.get("action"));
+
+        if(action.equals("update")) {
+            EgovMap board = pgHomeBoardService.getBoard(param);
+            model.addAttribute("board", board);
+        }
 
         return "home/pg/board";
     }
@@ -194,7 +234,40 @@ public class PgHomeBoardController {
         return ResponseEntity.status(HttpStatus.OK).body(retMap);
     }
 
+    /**
+     * 게시글 - 삭제 (상태 변경: 소프트 삭제)
+     * @param req
+     * @param res
+     * @param model
+     * @param param
+     * @return 게시글 삭제(상태 변경) 결과
+     * @throws Exception
+     */
+    @PreAuthorize("isAuthenticated()")
+    @RequestMapping("/setBoardDelete.do")
+    @ResponseBody
+    public ResponseEntity<?> setBoardDelete(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
+        HashMap<String, Object> retMap = new HashMap<>();
 
-    // TODO: 게시판 - 수정/삭제(소프트 삭제)
+        try {
+            param.put("status", "DELETED");
+
+            if (pgHomeBoardService.setBoardStatusUpdate(param)) {
+                retMap.put("error", "N");
+                retMap.put("successTitle", "Success");
+                retMap.put("successMsg", "게시판이이 삭제되었습니다.");
+            } else {
+                retMap.put("error", "Y");
+                retMap.put("errorTitle", "게시글 삭제");
+                retMap.put("errorMsg", "데이터 처리 중 오류가 발생했습니다.");
+            }
+        } catch (DataAccessException | MultipartException | NullPointerException | IllegalArgumentException e) {
+            log.error("PgHomeCommentController:setBoardDelete.do error={}", e.getMessage());
+            throw e;
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(retMap);
+
+    }
+
 
 }

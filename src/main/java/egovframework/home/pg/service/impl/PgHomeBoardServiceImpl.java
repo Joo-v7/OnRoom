@@ -49,10 +49,10 @@ public class PgHomeBoardServiceImpl extends EgovAbstractServiceImpl implements P
     }
 
     @Override
-    public boolean setBoardDelete(HashMap<String, Object> param) throws DataAccessException {
+    public boolean setBoardStatusUpdate(HashMap<String, Object> param) throws DataAccessException {
         boolean result = false;
 
-        if (pgHomeBoardMapper.setBoardDelete(param) > 0) {
+        if (pgHomeBoardMapper.setBoardStatusUpdate(param) > 0) {
             result = true;
         }
 

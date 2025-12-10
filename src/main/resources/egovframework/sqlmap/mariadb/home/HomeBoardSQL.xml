@@ -33,6 +33,7 @@
         FROM BOARD b
         JOIN MEMBER m ON b.member_id = m.member_id
         <where>
+            b.status = 'ACTIVE'
             <if test='searchBoardType != null and searchBoardType != ""'>
                 AND b.board_type_id = #{searchBoardType, jdbcType=INTEGER}
             </if>
@@ -105,12 +106,16 @@
             updt_dt = NOW()
     </insert>
 
-    <!-- 게시판 - 삭제 -->
-    <delete id="setBoardDelete" parameterType="hashMap">
-        DELETE
-        FROM BOARD
+    <!-- 게시판 - 상태 업데이트 ('ACTIVE', 'INACTIVE', 'DELETED') -->
+    <update id="setBoardStatusUpdate" parameterType="hashMap">
+        UPDATE BOARD
+        SET status = #{status, jdbcType=VARCHAR},
+            <if test="status == 'DELETED'">
+                del_dt = NOW(),
+            </if>
+            updt_dt = NOW()
         WHERE board_id = #{boardId, jdbcType=INTEGER}
-    </delete>
+    </update>
 
     <!-- 게시판 - 조회수 + 1 -->
     <update id="increaseViewCount" parameterType="hashMap">

@@ -41,6 +41,14 @@
             <div><strong class="text-dark me-3">작성일</strong> <span><fmt:formatDate value="${board.regDt}" pattern="yyyy-MM-dd HH:mm"/></span></div>
             <div class="vr"></div>
             <div><strong class="text-dark me-3">조회수</strong> <span><c:out value="${board.viewCount}"/></span></div>
+
+            <c:if test="${not empty currentMemberId and currentMemberId eq board.memberId}">
+              <div class="ms-auto">
+                <a href="javascript:void(0)" id="boardUpdate" class="text-decoration-none text-primary me-2">수정</a>
+                <a href="javascript:void(0)" id="boardDelete" class="text-decoration-none text-danger">삭제</a>
+              </div>
+            </c:if>
+
           </div>
 
           <!-- 본문 -->
@@ -99,6 +107,30 @@
     // 목록 이동 버튼
     $('#boardList').on('click', function(){
       boardList();
+    });
+
+    // 게시글 수정 버튼
+    $('#boardUpdate').on('click', function() {
+      let boardId = $('#boardId').val();
+
+      window.location.href = '<c:url value="/board.do?action=update"/>' + '&boardId=' + boardId;
+
+    });
+
+    // 게시글 삭제 버튼
+    $('#boardDelete').on('click', function() {
+      if (confirm("게시글을 삭제하시겠습니까?")) {
+
+        let boardId = $('#boardId').val();
+
+        ajaxForm('<c:url value="/setBoardDelete.do"/>', {boardId: boardId}, function(res) {
+          if ($.trim(res.error) === 'N') {
+            boardList();
+          }
+        });
+
+      }
+
     });
 
     // 댓글 등록 버튼
@@ -244,8 +276,8 @@
               // 오른쪽 수정/삭제 영역
               html += '<div>';
               if (currentMemberId === item.memberId) {
-                html += '<a href="#" class="updateComment text-decoration-none text-secondary me-2 " data-comment-id="' + item.commentId + '">수정</a>';
-                html += '<a href="#" class="deleteComment text-decoration-none text-secondary" ' +
+                html += '<a href="javascript:void(0)" class="updateComment text-decoration-none text-secondary me-2 " data-comment-id="' + item.commentId + '">수정</a>';
+                html += '<a href="javascript:void(0)" class="deleteComment text-decoration-none text-secondary" ' +
                         'data-comment-id="' + item.commentId + '" ' +
                         'data-member-id="' + item.memberId + '">삭제</a>';
               }

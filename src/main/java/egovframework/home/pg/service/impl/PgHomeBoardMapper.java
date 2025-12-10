@@ -33,7 +33,7 @@ public interface PgHomeBoardMapper {
     /**
      * 게시판 - 삭제
      */
-    int setBoardDelete(HashMap<String, Object> param) throws DataAccessException;
+    int setBoardStatusUpdate(HashMap<String, Object> param) throws DataAccessException;
 
     /**
      * 게시판 - 조회수 + 1

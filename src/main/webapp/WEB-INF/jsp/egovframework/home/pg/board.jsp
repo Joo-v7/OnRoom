@@ -31,11 +31,12 @@
         <div class="col-12 col-md-10 col-lg-8">
 
           <form id="boardForm" method="post">
+            <input type="hidden" class="form-control" id="boardId" name="boardId" value="${board.boardId}">
             <p class="small"><span class="text-danger mb-3">*</span> 는 필수 입력 사항입니다.</p>
             <dl class="row mb-3">
               <dt class="col-sm-2 col-form-label">제목 <span class="text-danger">*</span></dt>
               <dd class="col-sm-5">
-                <input type="text" class="form-control" id="title" name="title" maxlength="50" required>
+                <input type="text" class="form-control" id="title" name="title" value="${board.title}" maxlength="50" required>
               </dd>
             </dl>
 
@@ -45,7 +46,9 @@
                 <select id="boardType" name="boardTypeId" class="form-select" required>
                   <option value="" selected>선택</option>
                   <c:forEach var="boardType" items="${boardTypeList}">
-                    <option value="${boardType.boardTypeId}">${boardType.name}</option>
+                    <c:if test="${isAdmin or boardType.boardTypeId ne 1}">
+                      <option value="${boardType.boardTypeId}" <c:if test="${boardType.boardTypeId eq board.boardTypeId}">selected</c:if>>${boardType.name}</option>
+                    </c:if>
                   </c:forEach>
                 </select>
               </dd>
@@ -55,7 +58,7 @@
               <dt class="col-sm-2 col-form-label">내용 <span class="text-danger">*</span>
               </dt>
               <dd class="col-sm-10">
-                <textarea class="form-control" id="content" name="content" rows="8" maxlength="255" required></textarea>
+                <textarea class="form-control" id="content" name="content" rows="8" maxlength="255" required>${board.content}</textarea>
               </dd>
             </dl>
 
@@ -81,11 +84,14 @@ else window.onload = board;
 // 이벤트 정의
 function board() {
 
-  // 목록
+  // 취소 버튼 -> 목록으로 이동
   $('#boardList').on('click', function(){
-    console.log('목록 버튼 클릭');
-    boardList();
-
+    var act = ('${param.action}' === 'update') ? 'update' : 'insert';
+    if (act === 'update') {
+      history.back();
+    } else {
+      boardList();
+    }
   });
 
   // 저장
