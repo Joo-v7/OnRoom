@@ -19,4 +19,20 @@ public enum ReservationStatus {
         return kor;
     }
 
+    // 값 -> kor
+    public static String toKor(String status) {
+        if (status == null) {
+            return null;
+        }
+
+        try {
+            return ReservationStatus
+                    .valueOf(status.toUpperCase())
+                    .getKor();
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
 }
+
+

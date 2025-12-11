@@ -2,6 +2,7 @@ package egovframework.home.pg.web;
 
 import egovframework.home.pg.common.code.ReservationStatus;
 import egovframework.home.pg.common.security.user.PrincipalDetails;
+import egovframework.home.pg.common.utils.KakaoWorkUtil;
 import egovframework.home.pg.service.PgHomeReservationService;
 import egovframework.home.pg.service.PgHomeRoomService;
 import lombok.RequiredArgsConstructor;
@@ -155,6 +156,7 @@ public class PgHomeReservationController {
             // member_id
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
             param.put("memberId", principalDetails.getId());
+            param.put("email", principalDetails.getEmail()); // 카카오워크 사용자 알림에 사용
 
             // attachment
             if (attachment != null && !attachment.isEmpty()) {
@@ -211,8 +213,20 @@ public class PgHomeReservationController {
      * @throws Exception
      */
     @RequestMapping("/setReservationCancel.do")
-    public ResponseEntity<?> setReservationCancel(HttpServletRequest req, HttpServletResponse res, ModelMap model, @RequestParam HashMap<String, Object> param) throws Exception {
+    public ResponseEntity<?> setReservationCancel(
+            HttpServletRequest req,
+            HttpServletResponse res,
+            ModelMap model,
+            @RequestParam HashMap<String, Object> param,
+            Authentication authentication
+    ) throws Exception {
         HashMap<String, Object> retMap = new HashMap<>();
+
+        // member_id
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        param.put("memberId", principalDetails.getId());
+        param.put("email", principalDetails.getEmail()); // 카카오워크 사용자 알림에 사용
+
 
         param.put("status", ReservationStatus.CANCELLED.name());
 

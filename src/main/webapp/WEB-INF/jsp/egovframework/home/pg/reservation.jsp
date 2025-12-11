@@ -238,6 +238,7 @@ function reservation() {
   // 회의실 선택되어 있으면 참석인원 업데이트
   updateAttendeeCapacity();
 
+
 }
 
 // 예약 목록으로 이동
@@ -448,6 +449,7 @@ function bindEvents() {
   }
 
   // ============ JS에서 EL 사용한 부분 끝 =============
+
 
 }
 

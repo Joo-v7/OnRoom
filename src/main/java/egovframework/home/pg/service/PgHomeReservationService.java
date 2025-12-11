@@ -20,7 +20,7 @@ public interface PgHomeReservationService {
     /**
      * 예약 - 예약 merge
      */
-    boolean setReservationMerge(HashMap<String, Object> param) throws DataAccessException;
+    boolean setReservationMerge(HashMap<String, Object> param) throws Exception;
 
     /**
      * 예약 - 예약 전체 개수 조회

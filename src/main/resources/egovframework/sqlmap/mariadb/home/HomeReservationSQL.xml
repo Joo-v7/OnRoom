@@ -50,7 +50,8 @@
             rv.attachment,
             rv.reg_dt,
             r.name AS roomName,
-            m.name AS memberName
+            m.name AS memberName,
+            m.email AS memberEmail
         FROM RESERVATION rv
         JOIN ROOM r ON rv.room_id = r.room_id
         LEFT JOIN MEMBER m ON rv.member_id = m.member_id
@@ -58,7 +59,7 @@
     </select>
 
     <!-- 예약 Merge -->
-    <insert id="setReservationMerge" parameterType="hashMap">
+    <insert id="setReservationMerge" parameterType="hashMap" useGeneratedKeys="true" keyProperty="reservationId" keyColumn="reservation_id">
         INSERT INTO RESERVATION
         (
          <if test="reservationId != null and reservationId != ''">
@@ -139,11 +140,11 @@
         SELECT EXISTS (
             SELECT 1
             FROM RESERVATION
-            WHERE room_id = #{roomId, jdbcType=BIGINT}
+            WHERE room_id = #{roomId, jdbcType=INTEGER}
               AND status IN ('PENDING', 'APPROVED')
               -- 수정이면 자기 자신 제외
               <if test="reservationId != null and reservationId != ''">
-                  AND reservation_id != #{reservationId, jdbcType=BIGINT}
+                  AND reservation_id != #{reservationId, jdbcType=INTEGER}
               </if>
               -- 날짜 체크
               AND COALESCE(#{endDate, jdbcType=DATE}, #{startDate, jdbcType=DATE}) >= start_date
