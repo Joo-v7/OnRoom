@@ -150,10 +150,27 @@
               AND COALESCE(#{endDate, jdbcType=DATE}, #{startDate, jdbcType=DATE}) >= start_date
               AND COALESCE(end_date, start_date) >= #{startDate, jdbcType=DATE}
               -- 시간 체크
-              AND NOT (
-                  #{startAt, jdbcType=TIME} >= end_at
-                      OR start_at >= #{endAt, jdbcType=TIME}
-                )
+              AND end_at > #{startAt, jdbcType=TIME}
+              AND #{endAt, jdbcType=TIME} > start_at
+              -- 요일 체크
+              AND (
+                  -- 새 예약이 일자(D)인 경우
+                  <if test="daysOfWeek == null or daysOfWeek ==''">
+                      ( type = 'D' )
+                      OR
+                      ( type = 'R' AND FIND_IN_SET(WEEKDAY(#{startDate, jdbcType=DATE}) + 1, days_of_week) > 0 )
+                  </if>
+                  -- 새 예약이 정기(R)인 경우
+                  <if test="daysOfWeek != null and daysOfWeek != ''">
+                      ( type = 'D' AND FIND_IN_SET(WEEKDAY(start_date) + 1, #{daysOfWeek, jdbcType=VARCHAR}) > 0 )
+                      OR
+                      ( type = 'R' AND
+                      <foreach item="day" collection="daysOfWeek.split(',')" open="(" separator="OR" close=")">
+                          FIND_IN_SET(#{day}, days_of_week) > 0
+                      </foreach>
+                      )
+                  </if>
+              )
         )
     </select>
 

@@ -101,9 +101,49 @@
             <dl class="row mb-5">
               <dt class="col-sm-2 col-form-label">약관동의 <span class="text-danger">*</span></dt>
               <dd class="col-sm-7 pt-2">
+                <div class="form-check">
                 <input id="agreement" class="form-check-input" type="checkbox" required>
                 <label class="form-check-label" for="agreement">이용약관 동의 (필수)</label>
-                <a href="/terms" target="_blank" class="ms-2">약관보기</a>
+<%--                <a href="/terms" target="_blank" class="ms-2">약관보기</a>--%>
+
+                  <button
+                          type="button"
+                          class="btn btn-link btn-sm ms-2 p-0 align-baseline"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#termsCollapse"
+                          aria-expanded="false"
+                          aria-controls="termsCollapse">
+                    약관보기
+                  </button>
+                </div>
+
+                <div class="collapse mt-2" id="termsCollapse">
+                  <div class="card card-body" style="max-height: 200px; overflow-y: auto;">
+                    <h6>제 1조 (목적)</h6>
+                    <p class="small text-muted">
+                      이 약관은 ONROOM 서비스(이하 "서비스")의 이용과 관련하여
+                      회사와 회원 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
+                    </p>
+
+                    <h6>제 2조 (용어의 정의)</h6>
+                    <p class="small text-muted mb-1">
+                      1. "회원"이란 서비스에 접속하여 본 약관에 따라 이용계약을 체결하고,
+                      서비스를 이용하는 자를 말합니다.
+                    </p>
+                    <p class="small text-muted mb-1">
+                      2. "아이디(ID)"란 회원의 식별과 서비스 이용을 위하여
+                      회원이 정하고 회사가 승인하는 문자와 숫자의 조합을 말합니다.
+                    </p>
+
+                    <h6 class="mt-3">제 3조 (약관의 효력 및 변경)</h6>
+                    <p class="small text-muted">
+                      1. 회사는 본 약관의 내용을 회원이 알 수 있도록 서비스 초기 화면에 게시합니다.<br>
+                      2. 회사는 관련 법령을 위배하지 않는 범위에서 본 약관을 개정할 수 있습니다.
+                    </p>
+
+                  </div>
+                </div>
+
               </dd>
             </dl>
 

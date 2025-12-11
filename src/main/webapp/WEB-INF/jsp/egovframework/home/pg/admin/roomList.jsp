@@ -153,12 +153,12 @@
 
                 <div class="mb-3">
                   <label for="capacity" class="form-label fw-bold">수용인원 <span class="text-danger mb-3">*</span></label>
-                  <input id="capacity" name="capacity" type="number" class="form-control" min="1" placeholder="수용 인원을 입력하세요" required>
+                  <input id="capacity" name="capacity" type="number" class="form-control" min="1" max="100" placeholder="수용 인원을 입력하세요" required>
                 </div>
 
                 <div class="mb-3">
                   <label for="description" class="form-label fw-bold">설명 <span class="text-danger mb-3">*</span></label>
-                  <textarea id="description" name="description" class="form-control" rows="3" placeholder="회의실 설명을 입력하세요" required maxlength="255"></textarea>
+                  <textarea id="description" name="description" class="form-control" rows="3" placeholder="회의실 설명을 입력하세요" required maxlength="100"></textarea>
                 </div>
 
                 <div class="mb-3">

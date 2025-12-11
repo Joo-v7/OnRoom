@@ -76,14 +76,14 @@ public class PgHomeReservationServiceImpl implements PgHomeReservationService {
                 JSONArray userJsonArray = new JSONArray();
                 JSONArray adminJsonArray = new JSONArray();
 
-                String message = "OnRoom - 회의실 예약이 저장 알림";
+                String message = "OnRoom 예약 저장 알림";
                 String adminMessage = "관리자 - 회원의 예약 저장";
 
                 if (action.equals("insert")) {
-                    message = "OnRoom - 회의실 예약이 등록 알림";
+                    message = "OnRoom 예약 등록 알림";
                     adminMessage = "관리자 - 회원의 예약 등록";
                 } else if (action.equals("update")) {
-                    message = "OnRoom - 회의실 예약이 수정 알림";
+                    message = "OnRoom 예약 수정 알림";
                     adminMessage = "관리자 - 회원의 예약 수정";
                 }
 
@@ -117,6 +117,9 @@ public class PgHomeReservationServiceImpl implements PgHomeReservationService {
                 // 카카오워크에 등록된 유저의 이메일로 메시지 전송
                 String email = (String) mergedReservation.get("memberEmail");
                 email = AES256Util.decrypt(email);
+
+                log.info("merge email={}", email);
+                log.info("merge userJsonArray={}", userJsonArray.toJSONString());
 
                 kakaoWorkUtil.sendMessageToMemberByEmail(email, message, userJsonArray);
 

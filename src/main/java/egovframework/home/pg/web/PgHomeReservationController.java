@@ -156,7 +156,6 @@ public class PgHomeReservationController {
             // member_id
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
             param.put("memberId", principalDetails.getId());
-            param.put("email", principalDetails.getEmail()); // 카카오워크 사용자 알림에 사용
 
             // attachment
             if (attachment != null && !attachment.isEmpty()) {

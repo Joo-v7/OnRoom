@@ -369,7 +369,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
               } else { // 정기일때
                 let startDate = dateFormat(new Date(value.startDate));
-                let endDate = dateFormat(new Date(value.endDate));
+                // endDate는 + 1 한다. 아래에 endRecur은 마지막 날짜는 포함 안시켜서 + 1 해줘야함.
+                let endDateObj = new Date(value.endDate);
+                endDateObj.setDate(endDateObj.getDate() + 1);
+                let endRecurDate = dateFormat(endDateObj);
                 let daysOfWeekArr = [];
                 if (value.daysOfWeek) {
                   daysOfWeekArr = value.daysOfWeek.split(',');
@@ -379,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   id: $.trim(value.reservationId),
                   title: $.trim(value.name),
                   startRecur: startDate,
-                  endRecur: endDate,
+                  endRecur: endRecurDate,
                   startTime: value.startAt,
                   endTime: value.endAt,
                   daysOfWeek: daysOfWeekArr,

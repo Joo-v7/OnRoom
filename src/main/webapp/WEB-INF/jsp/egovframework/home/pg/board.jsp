@@ -58,7 +58,7 @@
               <dt class="col-sm-2 col-form-label">내용 <span class="text-danger">*</span>
               </dt>
               <dd class="col-sm-10">
-                <textarea class="form-control" id="content" name="content" rows="8" maxlength="255" required>${board.content}</textarea>
+                <textarea class="form-control" id="content" name="content" rows="8" maxlength="150" required>${board.content}</textarea>
               </dd>
             </dl>
 
@@ -110,8 +110,9 @@ function board() {
 function boardList() {
   const previousUrl = document.referrer;
   let $form = $('#searchForm');
+  const action = '${param.action}';
 
-  if (previousUrl.includes('myBoardList.do')) {
+  if (previousUrl.includes('myBoardList.do') || action === 'update') {
     $form.attr('action', '/myPage/myBoardList.do');
   } else {
     $form.attr('action', "/boardList.do");
@@ -142,11 +143,11 @@ function submitBoardForm() {
   }
 
   // 내용
-  if(!formErr && !isValidContent($('#content').val())) {
-    formErr = true;
-    moveFocus = 'content';
-    errMsg = '내용은 한글, 영어, 숫자만 입력 가능합니다.';
-  }
+  // if(!formErr && !isValidContent($('#content').val())) {
+  //   formErr = true;
+  //   moveFocus = 'content';
+  //   errMsg = '내용은 한글, 영어, 숫자만 입력 가능합니다.';
+  // }
 
   // 에러가 하나라도 잡혔으면 여기서 한 번만 alert 후 종료 (각각 alert 띄우니 사용자 편의성 매우 떨어짐)
   if (formErr) {
@@ -188,11 +189,11 @@ function bindEvents() {
     $(this).val(filtered);
   });
 
-  // 내용 (한글, 숫자, 영어, 공백 허용)
-  $('#content').on('input', function() {
-    const filtered = $(this).val().replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9a-zA-Z\s]/g, '');
-    $(this).val(filtered);
-  });
+  // // 내용 (한글, 숫자, 영어, 공백 허용)
+  // $('#content').on('input', function() {
+  //   const filtered = $(this).val().replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ0-9a-zA-Z\s]/g, '');
+  //   $(this).val(filtered);
+  // });
 
 }
 
