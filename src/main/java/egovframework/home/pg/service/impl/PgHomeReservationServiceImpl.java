@@ -124,7 +124,7 @@ public class PgHomeReservationServiceImpl implements PgHomeReservationService {
                 // ============================= 관리자 ===============================
 
                 adminJsonArray.add(kakaoWorkUtil.headerBlock(adminMessage));
-                adminJsonArray.add(kakaoWorkUtil.bodyTitleBlock((String) mergedReservation.get("name") + " 님의 예약 요청"));
+                adminJsonArray.add(kakaoWorkUtil.bodyTitleBlock((String) mergedReservation.get("memberName") + " 님의 예약 요청"));
                 adminJsonArray.add(kakaoWorkUtil.bodyContentBlock("회의실", (String) mergedReservation.get("roomName")));
                 adminJsonArray.add(kakaoWorkUtil.bodyContentBlock("회의명", (String) mergedReservation.get("name")));
                 adminJsonArray.add(kakaoWorkUtil.buttonBlock("예약 관리하기", "http://localhost:8080/admin/reservationList.do"));
