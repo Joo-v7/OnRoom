@@ -1,9 +1,6 @@
-# OnRoom
 <p align="center">
 <img width="367" height="373" alt="image" src="https://github.com/user-attachments/assets/c8c6222a-1f44-444e-b27f-6a42b3cbcd65" />
 </p>
-
-
 ***
 
 # 💻 프로젝트 소개
@@ -34,7 +31,7 @@
 <img width="1374" height="658" alt="image" src="https://github.com/user-attachments/assets/af27cf69-19cc-47fa-a33c-19dc9dd1a396" />
 [WBS](https://docs.google.com/spreadsheets/d/1riN1BkslcHfxRbM3ZEnJF8fJ94Myii1HK28LHX7HIW4/edit?gid=0#gid=0)
 
-
+<br>
 
 ## 화면 설계서
 <img width="1149" height="654" alt="image" src="https://github.com/user-attachments/assets/0ab153df-4bd7-4987-89cb-771481d6112a" />
