@@ -4,6 +4,8 @@
 
 ***
 
+<br>
+
 # 💻 프로젝트 소개
 - 분류: 개인 프로젝트
 - 기간: 2025.11.02 ~ 2025.12.12
@@ -14,6 +16,8 @@
   - PW: admin1!
 
 ***
+
+<br>
 
 # ⚙️ 개발 환경
 | 구분 | 내용 |
@@ -29,6 +33,8 @@
 | 버전관리 | Git |
 
 ***
+
+<br>
 
 # 📝 프로젝트 관리
 ## [WBS](https://docs.google.com/spreadsheets/d/1riN1BkslcHfxRbM3ZEnJF8fJ94Myii1HK28LHX7HIW4/edit?gid=0#gid=0)
@@ -52,6 +58,8 @@
 <img width="835" height="484" alt="image" src="https://github.com/user-attachments/assets/4cf3e6dc-3986-4606-9105-35d232294033" />
 
 ***
+
+<br>
 
 # 🎯 주요 기능 및 화면 소개
 
@@ -114,13 +122,19 @@
 
 ***
 
+<br>
+
 # 💡 트러블 슈팅
 
 
 ***
 
+<br>
+
 # 🛠 기술 스택
 
 ***
+
+<br>
 
 <p align="center">감사합니다</p>
