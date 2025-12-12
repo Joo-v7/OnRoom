@@ -15,7 +15,7 @@
 
 ***
 
-# 개발 환경
+# ⚙️ 개발 환경
 | 구분 | 내용 |
 | ------ | ------ |
 | 시스템 운영환경 | Amazon Web Service(AWS) |
@@ -30,7 +30,7 @@
 
 ***
 
-# 프로젝트 관리
+# 📝 프로젝트 관리
 ## [WBS](https://docs.google.com/spreadsheets/d/1riN1BkslcHfxRbM3ZEnJF8fJ94Myii1HK28LHX7HIW4/edit?gid=0#gid=0)
 
 <img width="1374" height="658" alt="image" src="https://github.com/user-attachments/assets/af27cf69-19cc-47fa-a33c-19dc9dd1a396" />
@@ -53,7 +53,7 @@
 
 ***
 
-# 주요 기능
+# 🎯 주요 기능 및 화면 소개
 
 ## 메인 페이지
 > 사용자에게 회의실들을 한눈에 보여주고, 직관적인 탐색을 돕는 시작 화면입니다.
@@ -114,5 +114,13 @@
 
 ***
 
+# 💡 트러블 슈팅
+
+
+***
+
 # 🛠 기술 스택
 
+***
+
+<p align="center">감사합니다</p>
