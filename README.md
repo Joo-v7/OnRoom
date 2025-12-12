@@ -9,8 +9,10 @@
 - 기간: 2025.11.02 ~ 2025.12.12
 - 소개: 회의실을 실시간으로 예약/승인/관리하는 웹 기반 시스템
 - 주소: http://onroom.site
+- 관리자 계정
+  - ID: admin1
+  - PW: admin1!
 
-관리자 계정 - ID: admin1 / PW: admin1!
 ***
 
 # 개발 환경
@@ -25,11 +27,11 @@
 | 프론트엔드 | BootStrap5, jQuery |
 | IDE | IntelliJ |
 | 버전관리 | Git |
+
 ***
 
 # 프로젝트 관리
-## WBS
-[WBS](https://docs.google.com/spreadsheets/d/1riN1BkslcHfxRbM3ZEnJF8fJ94Myii1HK28LHX7HIW4/edit?gid=0#gid=0)
+## [WBS](https://docs.google.com/spreadsheets/d/1riN1BkslcHfxRbM3ZEnJF8fJ94Myii1HK28LHX7HIW4/edit?gid=0#gid=0)
 
 <img width="1374" height="658" alt="image" src="https://github.com/user-attachments/assets/af27cf69-19cc-47fa-a33c-19dc9dd1a396" />
 
@@ -38,22 +40,21 @@
 ## 화면 설계서
 <img width="1149" height="654" alt="image" src="https://github.com/user-attachments/assets/0ab153df-4bd7-4987-89cb-771481d6112a" />
 
-
+<br><br><br>
 
 ## 시스템 아키텍처
 <img width="462" height="241" alt="image" src="https://github.com/user-attachments/assets/2eaf906e-a798-474a-a09b-19ec0be00293" />
 
 
 
-## ERD
-[ERDCloud](https://www.erdcloud.com/d/nJEEZahupcYsMb5nz)
+## [ERD](https://www.erdcloud.com/d/nJEEZahupcYsMb5nz)
 
 <img width="835" height="484" alt="image" src="https://github.com/user-attachments/assets/4cf3e6dc-3986-4606-9105-35d232294033" />
 
 ***
 
 # 주요 기능
-## 사용자
+
 ## 메인 페이지
 > 사용자에게 회의실들을 한눈에 보여주고, 직관적인 탐색을 돕는 시작 화면입니다.
 
@@ -106,3 +107,6 @@
 
 
 ***
+
+# 🛠 기술 스택
+
