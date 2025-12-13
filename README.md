@@ -38,7 +38,9 @@
 <br><br>
 
 ## 화면 설계서
-<img width="1149" height="654" alt="image" src="https://github.com/user-attachments/assets/0ab153df-4bd7-4987-89cb-771481d6112a" />
+<p align: "center">
+  <img width="1149" height="654" alt="image" src="https://github.com/user-attachments/assets/0ab153df-4bd7-4987-89cb-771481d6112a" />
+</p>
 
 <br><br>
 
