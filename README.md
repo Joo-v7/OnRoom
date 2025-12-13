@@ -129,7 +129,7 @@
 ![Bootstrap5](https://img.shields.io/badge/Bootstrap5-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
 
 ### Framework & Library
-![eGovFrame](https://img.shields.io/badge/eGovFrame-0054A6?style=for-the-badge)
+![전자정부프레임워크](https://img.shields.io/badge/eGovFrame-0054A6?style=for-the-badge)
 ![Spring](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 ![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white)
 ![MyBatis](https://img.shields.io/badge/MyBatis-000000?style=for-the-badge)
