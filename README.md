@@ -43,7 +43,7 @@
 <br><br>
 
 ## 시스템 아키텍처
-<p align: "center">
+<p align="center">
 <img width="462" height="241" alt="image" src="https://github.com/user-attachments/assets/2eaf906e-a798-474a-a09b-19ec0be00293" />
 </p>
 
