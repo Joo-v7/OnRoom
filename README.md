@@ -1,5 +1,5 @@
 <p align="center">
-<img width="1024" height="1024" alt="ChatGPT Image 2025년 12월 13일 오후 01_42_53" src="https://github.com/user-attachments/assets/5ced0815-6f6c-42be-a72e-a6108acc3513" />
+  <img width="367" height="373" alt="onrrom로고2" src="https://github.com/user-attachments/assets/84212516-6847-474e-93ec-e41febfabf0b" />
 </p>
 
 ***
