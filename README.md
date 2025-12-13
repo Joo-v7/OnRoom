@@ -38,14 +38,14 @@
 <br><br>
 
 ## 화면 설계서
-<p align: "center">
 <img width="1149" height="654" alt="image" src="https://github.com/user-attachments/assets/0ab153df-4bd7-4987-89cb-771481d6112a" />
-</p>
 
 <br><br>
 
 ## 시스템 아키텍처
+<p align: "center">
 <img width="462" height="241" alt="image" src="https://github.com/user-attachments/assets/2eaf906e-a798-474a-a09b-19ec0be00293" />
+</p>
 
 <br><br>
 
