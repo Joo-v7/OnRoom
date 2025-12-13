@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="367" height="373" alt="onrrom로고2" src="https://github.com/user-attachments/assets/84212516-6847-474e-93ec-e41febfabf0b" />
+  <img width="367" height="373" alt="onroom로고3" src="https://github.com/user-attachments/assets/3f1d25ee-a5b1-461d-a128-ff8053397b0c" />
 </p>
 
 ***
